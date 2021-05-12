@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Christian
  */
 public class Client {
-    private Connection connection = SingleConnection.getFlightsInstance();
+    private Connection connection = SingleConnection.getInstance();
     private String fullName;
     private int passNumber;
     private String contact;
