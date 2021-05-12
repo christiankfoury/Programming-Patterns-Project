@@ -8,32 +8,16 @@ import java.sql.*;
  */
 public class SingleConnection {
     private static Connection clientsConnection;
-    private static Connection flightsConnection;
-    private static Connection reservedFlightsConnection;
     
-    public static Connection getClientsInstance() {
+    public static Connection getInstance() {
         if (clientsConnection == null) {
-            clientsConnection = createConnection("Clients.db");
+            clientsConnection = createConnection();
         }
         return clientsConnection;
     }
     
-    public static Connection getFlightsInstance() {
-        if (flightsConnection == null) {
-            flightsConnection = createConnection("Flights.db");
-        }
-        return flightsConnection;
-    }
-    
-    public static Connection getReservedFlightsInstance() {
-        if (reservedFlightsConnection == null) {
-            reservedFlightsConnection = createConnection("ReservedFlights.db");
-        }
-        return reservedFlightsConnection;
-    }
-    
-    private static Connection createConnection(String databaseName){
-        String databaseUrl = "jdbc:sqlite:C:\\SQlite\\db\\Project\\" + databaseName;
+    private static Connection createConnection(){
+        String databaseUrl = "jdbc:sqlite:C:\\SQlite\\db\\Project\\AirLine.db";
         Connection connection = null;
         try {
             Class.forName("org.sqlite.JDBC");
