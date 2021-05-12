@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -53,8 +55,8 @@ public class Flight {
         }
         try {
             Statement statement = connection.createStatement();
-            String insertInTable = String.format("INSERT INTO FLIGHTS (FlightsN, Name, Origin,"
-                    + "Destination, Duration, Seats, Available, Amount)"
+            String insertInTable = String.format("INSERT INTO FLIGHTS (FlightN, Name, Origin,"
+                    + "Dest, Duration, Seats, Available, Amount)"
                     + "VALUES ('%s', '%s', '%s', '%s', %d, %d, %d, %f);", flight.getFlightN(),
                     flight.getName(), flight.getOrigin(), flight.getDestination(),
                     flight.getDuration(), flight.getSeats(), flight.getAvailableSeats(), flight.getAmount());
@@ -85,7 +87,7 @@ public class Flight {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        
+
         try {
             Statement statement = connection.createStatement();
             String deleteInTable = String.format("DELETE FROM Flights WHERE FligtsN = %s", flightNumber);
@@ -99,13 +101,13 @@ public class Flight {
     }
 
     public boolean updateFlightData(String flightNumber, String field, String newValue) {
-        ArrayList<String> fields = new ArrayList<>(Arrays.asList("flightn", "name", "origin", "destination", 
-            "duration", "seats", "available", "amount"));
-        
+        ArrayList<String> fields = new ArrayList<>(Arrays.asList("flightn", "name", "origin", "dest",
+                "duration", "seats", "available", "amount"));
+
         if (!fields.contains(field.toLowerCase())) {
             return false;
         }
-        
+
         try {
             Statement statement = connection.createStatement();
             String queryTable = String.format("SELECT COUNT(*) FROM Flights WHERE "
@@ -123,7 +125,7 @@ public class Flight {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        
+
         try {
             Statement statement = connection.createStatement();
             String updateInTable = String.format("UPDATE Flights"
@@ -137,7 +139,7 @@ public class Flight {
         }
         return false;
     }
-    
+
     public boolean issueTicket(String flight, Client client) {
         try {
             Statement statement = connection.createStatement();
@@ -154,19 +156,19 @@ public class Flight {
             if (available == 0) {
                 return false;
             }
-            
+
             statement = connection.createStatement();
             String updateTable = String.format("UPDATE TABLE"
                     + "SET Available = %d"
                     + "WHERE FlightN = '%s'", available - 1, flight);
             statement.executeUpdate(updateTable);
-            
+
             statement = connection.createStatement();
             //                                                                                                                                  AUTO-INCREMENT
             java.util.Date date = new java.util.Date();
-            
+
             String insertTable = String.format("INSERT INTO ReservedFlights (FlightN, PassNum, FlName, IssueDate, Contact, Amount)"
-                    + "VALUES ('%s', '%s', '%s', '%t', '%s', '%d')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amount);
+                    + "VALUES ('%s', '%s', '%s', '%s, '%s', '%f')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amount);
             statement.executeUpdate(insertTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -174,16 +176,80 @@ public class Flight {
         }
         return true;
     }
+
+    public boolean cancelFlight(int ticket, int passNumber) {
+        try {
+            Statement statement = connection.createStatement();
+            String queryTable = String.format("SELECT COUNT(*) FROM ReservedFlights WHERE "
+                    + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
+            ResultSet resultSet = statement.executeQuery(queryTable);
+
+            int count = -1;
+            while (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            if (count == 0) {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+
+        try {
+            Statement statement = connection.createStatement();
+            String updateInTable = String.format("DELETE FROM ReservedFlights WHERE "
+                    + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
+            statement.executeUpdate(updateInTable);
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        return true;
+    }
+
+    public static Map<String, String> viewBoard() {
+        TreeMap<String, String> map = new TreeMap<>();
+        Connection connection = SingleConnection.getFlightsInstance();
+        try {
+            Statement statement = connection.createStatement();
+            String queryTable = String.format("SELECT * FROM Flights ORDER BY FlightN;");
+            ResultSet resultSet = statement.executeQuery(queryTable);
+
+            while (resultSet.next()) {
+                map.put("FlightN" + resultSet.getString("FlightN"), " Name" + resultSet.getString("Name")
+                        + ", Origin" + resultSet.getString("Origin") + ", Dest" + resultSet.getString("Dest")
+                        + ", Duration" + resultSet.getString("Duration") + ", Seats" + resultSet.getString("Seats")
+                        + ", Available" + resultSet.getString("Available") + ", Amount" + resultSet.getString("Amount"));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        return map;
+    }
+
+    public static Map<String, String> viewBookedFlights(){
+        TreeMap<String, String> map = new TreeMap<>();
+        Connection connection = SingleConnection.getFlightsInstance();
+        try {
+            Statement statement = connection.createStatement();
+            String queryTable = String.format("SELECT * FROM ReservedFlights ORDER BY FlightN;");
+            ResultSet resultSet = statement.executeQuery(queryTable);
+
+            while (resultSet.next()) {
+                map.put("FlightN" + resultSet.getString("FlightN"), " TicketN" + resultSet.getString("TicketN")
+                        + ", PassNum" + resultSet.getString("PassNum") + ", FLName" + resultSet.getString("FLNAme")
+                        + ", IssueDate" + resultSet.getString("IssueDate") + ", Contact" + resultSet.getString("Contact")
+                        + ", Amount" + resultSet.getString("Amount"));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        return map;
+    }
     
-//    public boolean cancelFlight(int ticket, int passNumber) {
-//        
-//    }
-//    public static Map<String, String> viewBoard() {
-//        
-//    }
-//    public static Map<String, String> viewBookedFlights(){
-//        
-//    }
     public Connection getConnection() {
         return connection;
     }
