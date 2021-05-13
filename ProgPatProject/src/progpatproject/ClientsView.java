@@ -1,6 +1,7 @@
 package progpatproject;
 
 import java.sql.*;
+import java.util.List;
 
 /**
  *
@@ -13,20 +14,7 @@ public class ClientsView {
         this.connection = connection;
     }
     
-    public void printClientsDetails() {
-        try {
-            Statement statement = connection.createStatement();
-            String queryTable = "select * from Clients;";
-            ResultSet resultSet = statement.executeQuery(queryTable);
-
-            while (resultSet.next()) {
-                System.out.println("PASS NUM = " + resultSet.getString("PassNum"));
-                System.out.println("FLNAME = " + resultSet.getString("FlName"));
-                System.out.println("CONTACT = " + resultSet.getString("Contact") + "\n");
-            }
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
+    public void printData(List<Flight> flights) {
+        System.out.println(flights);
     }
 }
