@@ -75,7 +75,7 @@ public class Flight {
             // Checking if flight does not exist
             Statement statement = connection.createStatement();
             String queryTable = String.format("SELECT COUNT(*) FROM Flights WHERE "
-                    + "FlightN = '%s;", flightNumber);
+                    + "FlightN = '%s';", flightNumber);
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             int count = -1;
@@ -93,7 +93,7 @@ public class Flight {
         // if if flight exists, remove it
         try {
             Statement statement = connection.createStatement();
-            String deleteInTable = String.format("DELETE FROM Flights WHERE FligtsN = %s", flightNumber);
+            String deleteInTable = String.format("DELETE FROM Flights WHERE FligtsN = '%s'", flightNumber);
             statement.executeUpdate(deleteInTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -136,16 +136,16 @@ public class Flight {
 
             // depdending if the value is string or int/double, there should be
             // quotations surronding the value
-            if (new ArrayList<>(Arrays.asList("flightsn", "name", "origin", "dest")).contains(field.toLowerCase())) {
+            if (new ArrayList<>(Arrays.asList("origin", "dest")).contains(field.toLowerCase())) {
                 updateInTable = String.format("UPDATE Flights"
                         + "SET '%s' = '%s'"
                         + "WHERE '%s' = '%s'", field, newValue, field, flightNumber);
-            } else {
+            } // else duration
+            else {
                 updateInTable = String.format("UPDATE Flights"
                         + "SET '%s' = %s"
                         + "WHERE '%s' = '%s'", field, newValue, field, flightNumber);
             }
-
             statement.executeUpdate(updateInTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -164,10 +164,10 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             int available = -1;
-            double amount = -1;
+            double amountToPay = -1;
             while (resultSet.next()) {
                 available = resultSet.getInt(1);
-                amount = resultSet.getInt(2);
+                amountToPay = resultSet.getInt(2);
             }
             if (available == 0) {
                 return false;
@@ -184,7 +184,7 @@ public class Flight {
             java.util.Date date = new java.util.Date();
 
             String insertTable = String.format("INSERT INTO ReservedFlights (FlightN, PassNum, FlName, IssueDate, Contact, Amount)"
-                    + "VALUES ('%s', '%s', '%s', '%s, '%s', '%f')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amount);
+                    + "VALUES ('%s', '%s', '%s', '%s, '%s', '%f')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
             statement.executeUpdate(insertTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -198,7 +198,7 @@ public class Flight {
             Statement statement = connection.createStatement();
             // check if ticket already exists
             String queryTable = String.format("SELECT COUNT(*) FROM ReservedFlights WHERE "
-                    + "TicketN = %d;", ticket);
+                    + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             int count = -1;
