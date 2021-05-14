@@ -30,7 +30,8 @@ public class InputOutput {
             }
             switch (choice) {
                 case 1:
-                    addFlight();
+                    Controller controller = new Controller(addFlight(), null);
+                    controller.addFlight();
                     break;
                 case 2:
                     break;
@@ -80,13 +81,71 @@ public class InputOutput {
     }
 
     public static Flight addFlight() {
+        String flightN, name, origin, dest;
+        flightN = name = origin = dest = null;
+        int duration = 0, seats = 0;
+        double amount = 0;
         try {
             Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter the flight number");
-            String flightNumber = scanner.nextLine();
-        } catch (NumberFormatException exception) {
-        }
             
-        return new Flight("", "", "", "", 1, 1, 1, 1);
+            System.out.println("Enter the flight number");
+            if (scanner.hasNextLine()) {
+                flightN = scanner.nextLine(); 
+            }
+            
+            System.out.println("Enter the name of the aircraft");
+            if (scanner.hasNextLine()) {
+                name = scanner.nextLine();
+            }
+            
+            System.out.println("Enter the origin of the flight");
+            if (scanner.hasNextLine()) {
+                origin = scanner.nextLine();
+            }
+            
+            System.out.println("Enter the destination of the flight");
+            if (scanner.hasNextLine()) {
+                dest = scanner.nextLine();
+            }
+            
+            System.out.println("Enter the duration of the flight");
+            String input = scanner.nextLine();
+            while (!isInteger(input)) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Enter the duration of the flight");
+                input = scanner.nextLine();
+            }
+            if (scanner.hasNextInt()) {
+                duration = scanner.nextInt();
+            }
+            
+            System.out.println("Enter the number of seats");
+            if (scanner.hasNextInt()) {
+                seats = scanner.nextInt();
+            }
+            // no prompt for the available amount of seats since
+            // the flight has just been addec
+            
+            System.out.println("Enter the amount of flight");
+            if (scanner.hasNextDouble()) {
+                amount = scanner.nextDouble();
+            }       
+            
+        } catch (NumberFormatException exception) {
+            System.out.println("You input is invalid!");
+            addFlight();
+        }
+
+        return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
+    }
+    
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        // only got here if we didn't return false
+        return true;
     }
 }

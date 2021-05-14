@@ -40,7 +40,7 @@ public class Flight {
             // Checking if flight already exists
             Statement statement = connection.createStatement();
             String queryTable = String.format("SELECT COUNT(*) FROM Flights WHERE "
-                    + "FlightN = '%s;", flight.getFlightN());
+                    + "FlightN = '%s';", flight.getFlightN());
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             int count = -1;
@@ -57,8 +57,8 @@ public class Flight {
         // if flight does not already exist in the database insert a new row
         try {
             Statement statement = connection.createStatement();
-            String insertInTable = String.format("INSERT INTO FLIGHTS (FlightN, Name, Origin,"
-                    + "Dest, Duration, Seats, Available, Amount)"
+            String insertInTable = String.format("INSERT INTO Flights (FlightN, Name, Origin,"
+                    + "Dest, Duration, Seats, Available, Amount) "
                     + "VALUES ('%s', '%s', '%s', '%s', %d, %d, %d, %f);", flight.getFlightN(),
                     flight.getName(), flight.getOrigin(), flight.getDestination(),
                     flight.getDuration(), flight.getSeats(), flight.getAvailableSeats(), flight.getAmount());
