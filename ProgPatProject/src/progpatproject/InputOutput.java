@@ -126,13 +126,13 @@ public class InputOutput {
             // no prompt for the available amount of seats since
             // the flight has just been addec
             
-            System.out.println("Enter the amount of flight");
+            System.out.println("Enter the price of the flight");
             if (scanner.hasNextDouble()) {
                 amount = scanner.nextDouble();
             }       
             
         } catch (NumberFormatException exception) {
-            System.out.println("You input is invalid!");
+            System.out.println("Your input is invalid!");
             addFlight();
         }
 
