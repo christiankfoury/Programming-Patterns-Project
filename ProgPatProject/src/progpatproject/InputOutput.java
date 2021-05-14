@@ -34,16 +34,31 @@ public class InputOutput {
                     controller.addFlight();
                     break;
                 case 2:
+                    controller = new Controller(null,null);
+                    controller.removeFlight(promptRemoveFlight());
                     break;
                 case 3:
+                    List<String> list = promptUpdateFlight();
+                    controller = new Controller(null,null);
+                    controller.updateFlightData(list.get(0),list.get(1),list.get(2));
                     break;
                 case 4:
+                    List<Object> issueTicketList = promptIssueTicket();
+                    controller = new Controller(null,null);
+                    controller.issueTicket((String)issueTicketList.get(0),(Client)issueTicketList.get(1));
                     break;
                 case 5:
+                    List<Integer> cancelFlightList = promptCancelFlight();
+                    controller = new Controller(null,null);
+                    controller.cancelFlight(cancelFlightList.get(0), cancelFlightList.get(1));
                     break;
                 case 6:
+                    controller = new Controller(null,null);
+                    controller.viewBoard();
                     break;
                 case 7:
+                    controller = new Controller(null,null);
+                    controller.viewBookedFlights();
                     break;
             }
         }
@@ -141,6 +156,176 @@ public class InputOutput {
         }
 
         return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
+    }
+    
+    public static String promptRemoveFlight(){
+        String flightNumber = "";
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter the flight number: ");
+            if(input.hasNextLine()){
+                flightNumber += input.nextLine();
+            }
+            
+            return flightNumber;
+            
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", The Flight could not be removed.");
+            return null;
+        }
+    }
+    
+    public static List<String> promptUpdateFlight(){
+        String flightNumber = "";
+        String field = "";
+        String newValue = "";
+        List<String> list = null;
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter the flight number: ");
+            if(input.hasNextLine()){
+                flightNumber += input.nextLine();
+            }
+            if(flightNumber.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            System.out.println("Please enter the field that you would like to update: ");
+            if(input.hasNextLine()){
+                field += input.nextLine();
+            }
+            if(field.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            System.out.println("Please enter the new value: ");
+            if(input.hasNextLine()){
+                newValue += input.nextLine();
+            }
+            if(newValue.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            list.add(flightNumber);
+            list.add(field);
+            list.add(newValue);
+            
+            if(list.isEmpty()){
+                throw new InputMismatchException();
+            }
+            else{
+                return list;
+            }
+            
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return null;
+        }
+    }
+    
+    public static List<Object> promptIssueTicket(){
+        List<Object> list = null;
+        String flightNumber = "";
+        String fullName = "";
+        int passNum = 0;
+        String contact = "";
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter the flight number: ");
+            if(input.hasNextLine()){
+                flightNumber += input.nextLine();
+            }
+            if (flightNumber.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            System.out.println("Please enter the client's full name: ");
+            if(input.hasNextLine()){
+                fullName += input.nextLine();
+            }
+            if(fullName.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            System.out.println("Please enter the client's passport number: ");
+            if(input.hasNextInt()){
+                passNum += input.nextInt();
+            }
+            if(passNum == 0){
+                throw new InputMismatchException();
+            }
+            
+            System.out.println("Please enter the client's contact: ");
+            if(input.hasNextLine()){
+                contact += input.nextLine();
+            }
+            if(contact.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            Client client = new Client(fullName,passNum,contact);
+            
+            list.add(flightNumber);
+            list.add(client);
+            
+            if(list.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            return list;  
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return null;
+        }
+        
+    }
+    
+    public static List<Integer> promptCancelFlight(){
+        List<Integer> list = null;
+        int ticketNumber = 0;
+        int passNumber = 0;
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter the ticket number: ");
+            if(input.hasNextInt()){
+                ticketNumber += input.nextInt();
+            }
+            if(ticketNumber==0){
+                throw new InputMismatchException();
+            }
+            
+            System.out.println("Please enter the passport number: ");
+            if(input.hasNextInt()){
+                passNumber += input.nextInt();
+            }
+            if(passNumber==0){
+                throw new InputMismatchException();
+            }
+            
+            list.add(ticketNumber);
+            list.add(passNumber);
+            
+            if(list.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            return list;
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return null;
+        }
     }
     
     public static boolean isInteger(String s) {
