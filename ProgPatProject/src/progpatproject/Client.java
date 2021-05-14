@@ -26,50 +26,54 @@ public class Client {
         this.contact = contact;
     }
     
-    public boolean bookASeat(String flightNumber) throws ClassNotFoundException, SQLException{
+    public boolean bookASeat(String flightNumber){
         try{
             Class.forName("org.sqlite.JDBC");
+            Statement stmt = connection.createStatement();
+            Flight flight = null;
+            String flNb = "'" + flightNumber + "'";
+            String getFlight = "SELECT * FROM Flights WHERE flightN = " + flNb + ";";
+            ResultSet rs = stmt.executeQuery(getFlight);
+            while(rs.next()){
+                String name = rs.getString("Name");
+                String origin = rs.getString("Origin");
+                String dest = rs.getString("Dest");
+                int duration = rs.getInt("Duration");
+                int totalSeats = rs.getInt("Seats");
+                int availSeats = rs.getInt("Available");
+                double price = rs.getDouble("Amount");
+
+                flight = new Flight(flightNumber,name,origin,dest,duration,totalSeats,availSeats,price);
+            }
+            try{
+                if (flight.getAvailableSeats() <= 0){
+                    return false;
+                }
+                else{
+                    stmt = connection.createStatement();
+                    int availSeats = flight.getAvailableSeats() - 1;
+                    String remove1FromAvailSeats = "UPDATE Flights SET Available = " + availSeats + " WHERE flightN = " + flNb + ";";
+                    stmt.executeUpdate(remove1FromAvailSeats);
+
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-mm-dd");
+                    LocalDateTime now = LocalDateTime.now();
+
+
+                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%s',%d,'%s',"
+                            + "'%t','%s',%f);", flightNumber, getPassNumber(),getFullName(),
+                            dtf.format(now),getContact(),flight.getAmount());
+                    stmt.executeUpdate(addEntry);
+                    return true;
+                }
+            }            
+            catch(Exception e){
+                System.err.println("Error Inserting in ReservedFlights Table.");
+                return false;
+            }  
         }
-        catch{
-            
-        }
-        
-        Statement stmt = connection.createStatement();
-        
-        Flight flight = null;
-        String flNb = "'" + flightNumber + "'";
-        String getFlight = "SELECT * FROM Flights WHERE flightN = " + flNb + ";";
-        ResultSet rs = stmt.executeQuery(getFlight);
-        while(rs.next()){
-            String name = rs.getString("Name");
-            String origin = rs.getString("Origin");
-            String dest = rs.getString("Dest");
-            int duration = rs.getInt("Duration");
-            int totalSeats = rs.getInt("Seats");
-            int availSeats = rs.getInt("Available");
-            double price = rs.getDouble("Amount");
-            
-            flight = new Flight(flightNumber,name,origin,dest,duration,totalSeats,availSeats,price);
-        }
-        
-        if (flight.getAvailableSeats() <= 0){
+        catch (Exception e){
+            System.err.println("SQL Error. Seat could not be added.");
             return false;
-        }
-        else{
-            stmt = connection.createStatement();
-            int availSeats = flight.getAvailableSeats() - 1;
-            String remove1FromAvailSeats = "UPDATE Flights SET Available = " + availSeats + " WHERE flightN = " + flNb + ";";
-            stmt.executeUpdate(remove1FromAvailSeats);
-            
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-mm-dd");
-            LocalDateTime now = LocalDateTime.now();
-           
-            
-            String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%s',%d,'%s',"
-                    + "'%t','%s',%f);", flightNumber, getPassNumber(),getFullName(),
-                    dtf.format(now),getContact(),flight.getAmount());
-            stmt.executeUpdate(addEntry);
-            return true;
         }
     }
     
@@ -115,6 +119,12 @@ public class Client {
     
     
     public List<Flight> searchFlightByDestination(String destination) throws SQLException {
+       try{
+           
+       }
+       catch(Exception e){
+           
+       }
        Statement stmt = connection.createStatement();
        String destinationString = "'" + destination + "'";
        String getFlight = "SELECT * FROM Flights WHERE Dest = " + destinationString + " ORDER BY flightN;";
