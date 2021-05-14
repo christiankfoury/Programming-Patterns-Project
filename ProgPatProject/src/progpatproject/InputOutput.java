@@ -30,7 +30,7 @@ public class InputOutput {
             }
             switch (choice) {
                 case 1:
-                    Controller controller = new Controller(addFlight(), null);
+                    Controller controller = new Controller(promptAddFlight(), null);
                     controller.addFlight();
                     break;
                 case 2:
@@ -80,7 +80,7 @@ public class InputOutput {
         System.out.println("Press 7 to view the booked flights");
     }
 
-    public static Flight addFlight() {
+    public static Flight promptAddFlight() {
         String flightN, name, origin, dest;
         flightN = name = origin = dest = null;
         int duration = 0, seats = 0;
@@ -115,25 +115,29 @@ public class InputOutput {
                 System.out.println("Enter the duration of the flight");
                 input = scanner.nextLine();
             }
-            if (scanner.hasNextInt()) {
-                duration = scanner.nextInt();
-            }
+            duration = Integer.parseInt(input);
             
             System.out.println("Enter the number of seats");
-            if (scanner.hasNextInt()) {
-                seats = scanner.nextInt();
+            input = scanner.nextLine();
+            while (!isInteger(input)) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Enter the number of seats");
+                input = scanner.nextLine();
             }
+            seats = Integer.parseInt(input);
             // no prompt for the available amount of seats since
             // the flight has just been addec
             
             System.out.println("Enter the amount of flight");
-            if (scanner.hasNextDouble()) {
-                amount = scanner.nextDouble();
-            }       
+            input = scanner.nextLine();
+            while (!isDouble(input)) {
+                System.out.println("Your input is wrong!");
+                System.out.println("Enter the amount of flight");
+                input = scanner.nextLine();
+            }
+            amount = Double.parseDouble(input);
             
         } catch (NumberFormatException exception) {
-            System.out.println("You input is invalid!");
-            addFlight();
         }
 
         return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
@@ -142,6 +146,16 @@ public class InputOutput {
     public static boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        // only got here if we didn't return false
+        return true;
+    }
+    
+    public static boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
         } catch (NumberFormatException e) {
             return false;
         }
