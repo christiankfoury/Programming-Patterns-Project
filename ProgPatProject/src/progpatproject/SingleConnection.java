@@ -17,7 +17,7 @@ public class SingleConnection {
     }
     
     private static Connection createConnection(){
-        String databaseUrl = "jdbc:sqlite:C:\\SQlite\\db\\Project\\AirLine.db";
+        String databaseUrl = "jdbc:sqlite:AirLineDB.db";
         Connection connection = null;
         try {
             Class.forName("org.sqlite.JDBC");

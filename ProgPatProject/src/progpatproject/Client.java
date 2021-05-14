@@ -27,12 +27,11 @@ public class Client {
     }
     
     public boolean bookASeat(String flightNumber) throws ClassNotFoundException, SQLException{
-        try{
-            Class.forName("org.sqlite.JDBC");
-        }
-        catch{
-            
-        }
+//        try{
+//            Class.forName("org.sqlite.JDBC");
+//        }
+//        catch(ClassNotFoundException exception) {
+//        }
         
         Statement stmt = connection.createStatement();
         

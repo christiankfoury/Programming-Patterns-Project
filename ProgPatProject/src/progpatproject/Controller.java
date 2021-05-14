@@ -25,8 +25,8 @@ public class Controller {
     Fix error print messages.
     */
 
-    public void addFlight(Flight flight){
-        if(model.addFlight(flight)){
+    public void addFlight(){
+        if(model.addFlight(model)){
             System.out.println("Flight has been successfully added!");
         }
         else{
