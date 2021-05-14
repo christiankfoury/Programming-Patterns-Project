@@ -93,7 +93,7 @@ public class Flight {
         // if if flight exists, remove it
         try {
             Statement statement = connection.createStatement();
-            String deleteInTable = String.format("DELETE FROM Flights WHERE FligtsN = '%s'", flightNumber);
+            String deleteInTable = String.format("DELETE FROM Flights WHERE FlightN = '%s'", flightNumber);
             statement.executeUpdate(deleteInTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -115,7 +115,7 @@ public class Flight {
             // check if flight does not exist
             Statement statement = connection.createStatement();
             String queryTable = String.format("SELECT COUNT(*) FROM Flights WHERE "
-                    + "FlightN = '%s;", flightNumber);
+                    + "FlightN = '%s';", flightNumber);
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             int count = -1;
@@ -235,10 +235,10 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put("FlightN" + resultSet.getString("FlightN"), " Name" + resultSet.getString("Name")
-                        + ", Origin" + resultSet.getString("Origin") + ", Dest" + resultSet.getString("Dest")
-                        + ", Duration" + resultSet.getString("Duration") + ", Seats" + resultSet.getString("Seats")
-                        + ", Available" + resultSet.getString("Available") + ", Amount" + resultSet.getString("Amount"));
+                map.put("FlightN: " + resultSet.getString("FlightN"), " Name: " + resultSet.getString("Name")
+                        + ", Origin: " + resultSet.getString("Origin") + ", Dest: " + resultSet.getString("Dest")
+                        + ", Duration: " + resultSet.getString("Duration") + ", Seats: " + resultSet.getString("Seats")
+                        + ", Available: " + resultSet.getString("Available") + ", Amount: " + resultSet.getString("Amount"));
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

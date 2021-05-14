@@ -34,34 +34,41 @@ public class InputOutput {
             }
             switch (choice) {
                 case 1:
+                    // Works
                     Controller controller = new Controller(promptAddFlight(), null);
                     controller.addFlight();
                     break;
                 case 2:
-                    controller = new Controller(null,null);
+                    // Works
+                    controller = new Controller(getFlight(),null);
                     controller.removeFlight(promptRemoveFlight());
                     break;
                 case 3:
+                    // Fixing.
                     List<String> list = promptUpdateFlight();
-                    controller = new Controller(null,null);
+                    controller = new Controller(getFlight(),null);
                     controller.updateFlightData(list.get(0),list.get(1),list.get(2));
                     break;
                 case 4:
+                    // Need to fix NullPointerException.
                     List<Object> issueTicketList = promptIssueTicket();
-                    controller = new Controller(null,null);
+                    controller = new Controller(getFlight(),(Client)issueTicketList.get(1));
                     controller.issueTicket((String)issueTicketList.get(0),(Client)issueTicketList.get(1));
                     break;
                 case 5:
+                    // Will look into after IssueTicket is done.
                     List<Integer> cancelFlightList = promptCancelFlight();
-                    controller = new Controller(null,null);
+                    controller = new Controller(getFlight(),null);
                     controller.cancelFlight(cancelFlightList.get(0), cancelFlightList.get(1));
                     break;
                 case 6:
-                    controller = new Controller(null,null);
+                    // Works
+                    controller = new Controller(getFlight(),null);
                     controller.viewBoard();
                     break;
                 case 7:
-                    controller = new Controller(null,null);
+                    // Works
+                    controller = new Controller(getFlight(),null);
                     controller.viewBookedFlights();
                     break;
             }
@@ -71,39 +78,59 @@ public class InputOutput {
             while(client == null){
                 client = promptClientInfoInput();
             }
-            int choice = -1;
-            while (!new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)).contains(choice)) {
-                System.out.println("Your input is wrong");
-                printManagerChoice();
-                try {
-                    Scanner scanner = new Scanner(System.in);
-                    if (scanner.hasNextInt()) {
-                        choice = scanner.nextInt();
-                    }
-                } catch (NumberFormatException exception) {
+            int choice = 0;
+            Controller controller = new Controller(getFlight(), client);
+            boolean correctInput = false;
+            while (!correctInput)
+            {
+                printClientChoice();
+                Scanner input = new Scanner(System.in);
+                if(input.hasNextInt()){
+                    choice += input.nextInt();
                 }
-            }
-            Controller controller = new Controller(null, client);
-            switch (choice) {
+                switch (choice) {
                 case 1:
                     controller.bookASeat(promptBookASeat());
+                    correctInput = true;
                     break;
                 case 2:
                     controller.cancelReservation(promptCancelReservation());
+                    correctInput = true;
                     break;
                 case 3:
                     controller.searchFlightByDestination(promptSearchFlightsByDestination());
+                    correctInput = true;
                     break;
                 case 4:
                     controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
+                    correctInput = true;
                     break;
                 case 5:
                     controller.viewFlightBoard();
+                    correctInput = true;
                     break;
-            }
+                default:
+                    System.err.println("Please select a valid option!");
+                    correctInput = false;
+                    break;
+                }
+            }  
         }
     }
 
+    public static Flight getFlight(){
+        String flightNumber = "";
+        String name = "";
+        String origin = "";
+        String destination = "";
+        int duration = 0;
+        int seats = 0;
+        int availableSeats = 0;
+        double amount = 0.0;
+        
+        return new Flight(flightNumber,name,origin,destination,duration,seats,availableSeats,amount);
+    }
+    
     public static void promptUserType() {
         try {
             Scanner scanner = new Scanner(System.in);
@@ -262,6 +289,9 @@ public class InputOutput {
             if(input.hasNextLine()){
                 flightNumber += input.nextLine();
             }
+            if(flightNumber.isEmpty()){
+                throw new InputMismatchException();
+            }
             
             return flightNumber;
             
@@ -276,7 +306,7 @@ public class InputOutput {
         String flightNumber = "";
         String field = "";
         String newValue = "";
-        List<String> list = null;
+        List<String> list = new ArrayList<String>();
         
         try{
             Scanner input = new Scanner(System.in);
@@ -284,30 +314,35 @@ public class InputOutput {
             System.out.println("Please enter the flight number: ");
             if(input.hasNextLine()){
                 flightNumber += input.nextLine();
-            }
-            if(flightNumber.isEmpty()){
+                System.out.println(flightNumber);
+                
+                if(flightNumber.isEmpty()){
                 throw new InputMismatchException();
+                }
+                
+                list.add(flightNumber);
             }
-            
             System.out.println("Please enter the field that you would like to update: ");
             if(input.hasNextLine()){
                 field += input.nextLine();
-            }
-            if(field.isEmpty()){
+                
+                if(field.isEmpty()){
                 throw new InputMismatchException();
+                }
+                
+                list.add(field);                
             }
             
             System.out.println("Please enter the new value: ");
             if(input.hasNextLine()){
                 newValue += input.nextLine();
-            }
-            if(newValue.isEmpty()){
+                
+                if(newValue.isEmpty()){
                 throw new InputMismatchException();
+                }
+                
+                list.add(newValue);
             }
-            
-            list.add(flightNumber);
-            list.add(field);
-            list.add(newValue);
             
             if(list.isEmpty()){
                 throw new InputMismatchException();
@@ -474,7 +509,8 @@ public class InputOutput {
             
             System.out.println("Please enter a destination: ");
             if(input.hasNextLine()){
-                destination += input.nextLine();
+                String str = input.nextLine();
+                destination.concat(str);
             }
             if(destination.isEmpty()){
                 throw new InputMismatchException();

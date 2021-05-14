@@ -12,9 +12,9 @@ import java.util.Map;
 public class Controller {
     private final Connection connection = SingleConnection.getInstance();
     private Flight model;
-    private FlightsView flightsView;
+    private FlightsView flightsView = new FlightsView(connection);
     private Client client;
-    private ClientsView clientsView;
+    private ClientsView clientsView = new ClientsView(connection);
 
     public Controller(Flight flight, Client client) {
         this.model = flight;
@@ -75,7 +75,7 @@ public class Controller {
     }
     
     public void viewBookedFlights(){
-        flightsView.printData(Flight.viewBoard());
+        flightsView.printData(Flight.viewBookedFlights());
     }
     
     
