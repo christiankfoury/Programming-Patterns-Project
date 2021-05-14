@@ -1,5 +1,9 @@
 package progpatproject;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -12,7 +16,7 @@ public class InputOutput {
     // 1 for manager, 2 for client 
     private static int userType;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
         promptUserType();
         if (userType == 1) {
             int choice = -1;
@@ -62,6 +66,42 @@ public class InputOutput {
                     break;
             }
         }
+        else if (userType == 2){
+            Client client = null;
+            while(client == null){
+                client = promptClientInfoInput();
+            }
+            int choice = -1;
+            while (!new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)).contains(choice)) {
+                System.out.println("Your input is wrong");
+                printManagerChoice();
+                try {
+                    Scanner scanner = new Scanner(System.in);
+                    if (scanner.hasNextInt()) {
+                        choice = scanner.nextInt();
+                    }
+                } catch (NumberFormatException exception) {
+                }
+            }
+            Controller controller = new Controller(null, client);
+            switch (choice) {
+                case 1:
+                    controller.bookASeat(promptBookASeat());
+                    break;
+                case 2:
+                    controller.cancelReservation(promptCancelReservation());
+                    break;
+                case 3:
+                    controller.searchFlightByDestination(promptSearchFlightsByDestination());
+                    break;
+                case 4:
+                    controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
+                    break;
+                case 5:
+                    controller.viewFlightBoard();
+                    break;
+            }
+        }
     }
 
     public static void promptUserType() {
@@ -93,6 +133,60 @@ public class InputOutput {
         System.out.println("Press 5 to cancel a flight");
         System.out.println("Press 6 to view the flights board");
         System.out.println("Press 7 to view the booked flights");
+    }
+    
+    public static Client promptClientInfoInput(){
+        int passNum = 0;
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter you passport number: ");
+            if(input.hasNextInt()){
+                passNum += input.nextInt();
+            }
+            if(passNum == 0){
+                throw new InputMismatchException();
+            }
+            return checkClient(passNum);
+        }
+        catch(Exception e){
+            System.err.println("Error: " + e + ", please check your input.");
+            return null;
+        }
+    }
+    
+    public static Client checkClient(int passNumber){
+        
+        try{
+            Connection connection = SingleConnection.getInstance();
+            Statement stmt = connection.createStatement();
+            
+            String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNumber);
+            ResultSet rs = stmt.executeQuery(getClient);
+            Client client = null;
+            while(rs.next()){
+                String fullName = rs.getString("FlName");
+                String contact = rs.getString("Contact");
+                client = new Client(fullName,passNumber,contact);
+            }
+            if(client == null){
+                throw new SQLException();
+            }
+            return client;
+        }
+        catch(Exception e){
+            System.err.println("Error: " + e + ", Client does not exist.");
+            return null;
+        }
+    }
+    
+    public static void printClientChoice(){
+        System.out.println("Press 1 to book a seat");
+        System.out.println("Press 2 to cancel a reservation");
+        System.out.println("Press 3 to search flights by destination");
+        System.out.println("Press 4 to search flights by origin");
+        System.out.println("Press 5 to view the flights board");
     }
 
     public static Flight promptAddFlight() {
@@ -321,6 +415,93 @@ public class InputOutput {
             }
             
             return list;
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return null;
+        }
+    }
+    
+    public static String promptBookASeat(){
+        String flightNumber = "";
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter the flight number: ");
+            if(input.hasNextLine()){
+                flightNumber += input.nextLine();
+            }
+            if(flightNumber.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            return flightNumber;
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return null;
+        }
+    }
+    
+    public static int promptCancelReservation(){
+        int ticketNum = 0;
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter the ticket number: ");
+            if(input.hasNextInt()){
+                ticketNum += input.nextInt();
+            }
+            if(ticketNum == 0){
+                throw new InputMismatchException();
+            }
+            
+            return ticketNum;
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return 0;
+        }
+    }
+    
+    public static String promptSearchFlightsByDestination(){
+        String destination = "";
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter a destination: ");
+            if(input.hasNextLine()){
+                destination += input.nextLine();
+            }
+            if(destination.isEmpty()){
+                throw new InputMismatchException();
+            }
+            
+            return destination;
+        }
+        catch(InputMismatchException e){
+            System.err.println("Error: " + e + ", Please verify your input!");
+            return null;
+        }
+    }
+    
+    public static String promptSearchFlightsByOrigin(){
+        String origin = "";
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter an origin: ");
+            if(input.hasNextLine()){
+                origin += input.nextLine();
+            }
+            if(origin.isEmpty()){
+                throw new InputMismatchException();
+            }
+            return origin;
         }
         catch(InputMismatchException e){
             System.err.println("Error: " + e + ", Please verify your input!");
