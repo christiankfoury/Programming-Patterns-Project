@@ -28,7 +28,6 @@ public class Client {
     
     public boolean bookASeat(String flightNumber){
         try{
-            Class.forName("org.sqlite.JDBC");
             Statement stmt = connection.createStatement();
             Flight flight = null;
             String flNb = "'" + flightNumber + "'";
@@ -66,13 +65,13 @@ public class Client {
                     return true;
                 }
             }            
-            catch(Exception e){
-                System.err.println("Error Inserting in ReservedFlights Table.");
+            catch(SQLException e){
+                System.err.println("Error: " + e + " , Inserting in ReservedFlights Table.");
                 return false;
             }  
         }
-        catch (Exception e){
-            System.err.println("SQL Error. Seat could not be added.");
+        catch (SQLException e){
+            System.err.println("Error: " + e + " Seat could not be added.");
             return false;
         }
     }
@@ -116,108 +115,124 @@ public class Client {
             return true; 
         }
     }
-    
-    
-    public List<Flight> searchFlightByDestination(String destination) throws SQLException {
+     
+    public List<Flight> searchFlightByDestination(String destination){
        try{
-           
-       }
-       catch(Exception e){
-           
-       }
-       Statement stmt = connection.createStatement();
-       String destinationString = "'" + destination + "'";
-       String getFlight = "SELECT * FROM Flights WHERE Dest = " + destinationString + " ORDER BY flightN;";
-       Flight flight = null;
-       List<Flight> list = null;
+            Statement stmt = connection.createStatement();
+            String destinationString = "'" + destination + "'";
+            String getFlight = "SELECT * FROM Flights WHERE Dest = " + destinationString + " ORDER BY flightN;";
+            Flight flight = null;
+            List<Flight> list = null;
 
-       ResultSet rs = stmt.executeQuery(getFlight);
-        while(rs.next()){
-        String number = rs.getString("flightN");
-        String name = rs.getString("Name");
-        String origin = rs.getString("Origin");
-        int duration = rs.getInt("Duration");
-        int totalSeats = rs.getInt("Seats");
-        int availSeats = rs.getInt("Available");
-        double price = rs.getDouble("Amount");
+            ResultSet rs = stmt.executeQuery(getFlight);
+                while(rs.next()){
+                String number = rs.getString("flightN");
+                String name = rs.getString("Name");
+                String origin = rs.getString("Origin");
+                int duration = rs.getInt("Duration");
+                int totalSeats = rs.getInt("Seats");
+                int availSeats = rs.getInt("Available");
+                double price = rs.getDouble("Amount");
 
-        flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
-        list.add(flight);
-        }
-        return list;
+                flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
+                list.add(flight);
+            }
+            return list;
+       }
+       catch(SQLException e){
+           System.err.println("Error: " + e + " , Flights could not be pulled.");
+           return null;
+       }
     }
     
-    public List<Flight> serarchFlightByDuration(int duration) throws SQLException {
-       Statement stmt = connection.createStatement();
-       String getFlight = "SELECT * FROM Flights WHERE duration = " + duration + " ORDER BY flightN;";
-       Flight flight = null;
-       List<Flight> list = null;
+    public List<Flight> serarchFlightByDuration(int duration){
+        try{
+            Statement stmt = connection.createStatement();
+            String getFlight = "SELECT * FROM Flights WHERE duration = " + duration + " ORDER BY flightN;";
+            Flight flight = null;
+            List<Flight> list = null;
 
-       ResultSet rs = stmt.executeQuery(getFlight);
-        while(rs.next()){
-        String number = rs.getString("flightN");
-        String name = rs.getString("Name");
-        String origin = rs.getString("Origin");
-        String destination = rs.getString("Dest");
-        int totalSeats = rs.getInt("Seats");
-        int availSeats = rs.getInt("Available");
-        double price = rs.getDouble("Amount");
+            ResultSet rs = stmt.executeQuery(getFlight);
+             while(rs.next()){
+             String number = rs.getString("flightN");
+             String name = rs.getString("Name");
+             String origin = rs.getString("Origin");
+             String destination = rs.getString("Dest");
+             int totalSeats = rs.getInt("Seats");
+             int availSeats = rs.getInt("Available");
+             double price = rs.getDouble("Amount");
 
-        flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
-        list.add(flight);
+             flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
+             list.add(flight);
+             }
+             return list;
         }
-        return list;
+        catch (SQLException e){
+           System.err.println("Error: " + e + " , Flights could not be pulled.");
+           return null;
+       }  
     }
     
-    public List<Flight> searchFlightByOrigin(String origin) throws SQLException {
-       Statement stmt = connection.createStatement();
-       
-       String flightOrigin = "'" + origin + "'";
-       String getFlight = "SELECT * FROM Flights WHERE Origin = " + flightOrigin + " ORDER BY flightN;";
-       Flight flight = null;
-       List<Flight> list = null;
+    public List<Flight> searchFlightByOrigin(String origin){
+        try{
+            Statement stmt = connection.createStatement();
+            String flightOrigin = "'" + origin + "'";
+            String getFlight = "SELECT * FROM Flights WHERE Origin = " + flightOrigin + " ORDER BY flightN;";
+            Flight flight = null;
+            List<Flight> list = null;
 
-       ResultSet rs = stmt.executeQuery(getFlight);
-        while(rs.next()){
-        String number = rs.getString("flightN");
-        String name = rs.getString("Name");
-        int duration = rs.getInt("Duration");
-        String destination = rs.getString("Dest");
-        int totalSeats = rs.getInt("Seats");
-        int availSeats = rs.getInt("Available");
-        double price = rs.getDouble("Amount");
+            ResultSet rs = stmt.executeQuery(getFlight);
+             while(rs.next()){
+             String number = rs.getString("flightN");
+             String name = rs.getString("Name");
+             int duration = rs.getInt("Duration");
+             String destination = rs.getString("Dest");
+             int totalSeats = rs.getInt("Seats");
+             int availSeats = rs.getInt("Available");
+             double price = rs.getDouble("Amount");
 
-        flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
-        list.add(flight);
+             flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
+             list.add(flight);
+             }
+             return list;
         }
-        return list;
+        catch(SQLException e){
+           System.err.println("Error: " + e + " , Flights could not be pulled.");
+           return null;
+        }
     }
     
     public Map<String, String> viewFlightBoard() throws SQLException {
-        Statement stmt = connection.createStatement();
-       
-       String getFlight = "SELECT * FROM Flights ORDER BY flightN;";
-       Flight flight = null;
-       Map<String, String> map = null;
-       
-       
-       ResultSet rs = stmt.executeQuery(getFlight);
-        while(rs.next()){
-        String number = rs.getString("flightN");
-        String name = rs.getString("Name");
-        String origin = rs.getString("Origin");
-        int duration = rs.getInt("Duration");
-        String destination = rs.getString("Dest");
-        int totalSeats = rs.getInt("Seats");
-        int availSeats = rs.getInt("Available");
-        double price = rs.getDouble("Amount");
+        try{
+            Statement stmt = connection.createStatement();
+            String getFlight = "SELECT * FROM Flights ORDER BY flightN;";
+            Flight flight = null;
+            Map<String, String> map = null;
 
-        flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
-        map.put(number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
-                + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f }"
-                ,name,origin,destination,duration,totalSeats,availSeats,price));
+
+            ResultSet rs = stmt.executeQuery(getFlight);
+             while(rs.next()){
+             String number = rs.getString("flightN");
+             String name = rs.getString("Name");
+             String origin = rs.getString("Origin");
+             int duration = rs.getInt("Duration");
+             String destination = rs.getString("Dest");
+             int totalSeats = rs.getInt("Seats");
+             int availSeats = rs.getInt("Available");
+             double price = rs.getDouble("Amount");
+
+             flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
+             map.put(number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
+                     + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f }"
+                     ,name,origin,destination,duration,totalSeats,availSeats,price));
+             }
+            return map;
         }
-       return map;
+        catch(SQLException e){
+            System.err.println("Error: " + e + " , Flights board could not be pulled.");
+           return null;
+        }
+        
     }
 
     public String getFullName() {

@@ -73,7 +73,7 @@ public class InputOutput {
         System.out.println("Press 1 to add a flight");
         System.out.println("Press 2 to remove a flight");
         System.out.println("Press 3 to update a flight");
-        System.out.println("Press 4 to issue a ticked to a client");
+        System.out.println("Press 4 to issue a ticket to a client");
         System.out.println("Press 5 to cancel a flight");
         System.out.println("Press 6 to view the flights board");
         System.out.println("Press 7 to view the booked flights");
