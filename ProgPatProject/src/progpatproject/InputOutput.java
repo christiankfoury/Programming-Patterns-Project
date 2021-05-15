@@ -164,60 +164,6 @@ public class InputOutput {
         System.out.println("Press 6 to view the flights board");
         System.out.println("Press 7 to view the booked flights");
     }
-    
-    public static Client promptClientInfoInput(){
-        int passNum = 0;
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
-            System.out.println("Please enter you passport number: ");
-            if(input.hasNextInt()){
-                passNum += input.nextInt();
-            }
-            if(passNum == 0){
-                throw new InputMismatchException();
-            }
-            return checkClient(passNum);
-        }
-        catch(Exception e){
-            System.err.println("Error: " + e + ", please check your input.");
-            return null;
-        }
-    }
-    
-    public static Client checkClient(int passNumber){
-        
-        try{
-            Connection connection = SingleConnection.getInstance();
-            Statement stmt = connection.createStatement();
-            
-            String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNumber);
-            ResultSet rs = stmt.executeQuery(getClient);
-            Client client = null;
-            while(rs.next()){
-                String fullName = rs.getString("FlName");
-                String contact = rs.getString("Contact");
-                client = new Client(fullName,passNumber,contact);
-            }
-            if(client == null){
-                throw new SQLException();
-            }
-            return client;
-        }
-        catch(Exception e){
-            System.err.println("Error: " + e + ", Client does not exist.");
-            return null;
-        }
-    }
-    
-    public static void printClientChoice(){
-        System.out.println("Press 1 to book a seat");
-        System.out.println("Press 2 to cancel a reservation");
-        System.out.println("Press 3 to search flights by destination");
-        System.out.println("Press 4 to search flights by origin");
-        System.out.println("Press 5 to view the flights board");
-    }
 
     public static Flight promptAddFlight() {
         String flightN, name, origin, dest;
@@ -441,6 +387,60 @@ public class InputOutput {
             System.err.println("Error: " + e + ", Please verify your input!");
             return null;
         }
+    }
+    
+        public static Client promptClientInfoInput(){
+        int passNum = 0;
+        
+        try{
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("Please enter you passport number: ");
+            if(input.hasNextInt()){
+                passNum += input.nextInt();
+            }
+            if(passNum == 0){
+                throw new InputMismatchException();
+            }
+            return checkClient(passNum);
+        }
+        catch(Exception e){
+            System.err.println("Error: " + e + ", please check your input.");
+            return null;
+        }
+    }
+    
+    public static Client checkClient(int passNumber){
+        
+        try{
+            Connection connection = SingleConnection.getInstance();
+            Statement stmt = connection.createStatement();
+            
+            String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNumber);
+            ResultSet rs = stmt.executeQuery(getClient);
+            Client client = null;
+            while(rs.next()){
+                String fullName = rs.getString("FlName");
+                String contact = rs.getString("Contact");
+                client = new Client(fullName,passNumber,contact);
+            }
+            if(client == null){
+                throw new SQLException();
+            }
+            return client;
+        }
+        catch(Exception e){
+            System.err.println("Error: " + e + ", Client does not exist.");
+            return null;
+        }
+    }
+    
+    public static void printClientChoice(){
+        System.out.println("Press 1 to book a seat");
+        System.out.println("Press 2 to cancel a reservation");
+        System.out.println("Press 3 to search flights by destination");
+        System.out.println("Press 4 to search flights by origin");
+        System.out.println("Press 5 to view the flights board");
     }
         
     public static String promptBookASeat(){
