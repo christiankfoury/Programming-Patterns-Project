@@ -257,17 +257,14 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-<<<<<<< HEAD
                 map.put("TicketN" + resultSet.getString("TicketN"), " FlightN" + resultSet.getString("FlightN")
                         + ", PassNum" + resultSet.getString("PassNum") + ", FLName" + resultSet.getString("FLName")
                         + ", IssueDate" + resultSet.getString("IssueDate") + ", Contact" + resultSet.getString("Contact")
                         + ", Amount" + resultSet.getString("Amount"));
-=======
                 map.put("FlightN: " + resultSet.getString("FlightN"), " TicketN: " + resultSet.getString("TicketN")
                         + ", PassNum: " + resultSet.getString("PassNum") + ", FLName: " + resultSet.getString("FLName")
                         + ", IssueDate: " + resultSet.getString("IssueDate") + ", Contact: " + resultSet.getString("Contact")
                         + ", Amount: " + resultSet.getString("Amount"));
->>>>>>> cb165b3c271a6c3e366245ffc443a319465322f4
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
