@@ -93,12 +93,12 @@ public class InputOutput {
                 }
                 switch (choice) {
                 case 1:
-                    // Need to fix.
+                    // Works
                     controller.bookASeat(promptBookASeat());
                     correctInput = true;
                     break;
                 case 2:
-                    // Need to fix.
+                    // Works.
                     controller.cancelReservation(promptCancelReservation());
                     correctInput = true;
                     break;
@@ -352,7 +352,6 @@ public class InputOutput {
             System.err.println("Error: " + e + ", Please verify your input!");
             return null;
         }
-        
     }
     
     public static List<Integer> promptCancelFlight(){

@@ -56,12 +56,27 @@ public class Client {
                     String remove1FromAvailSeats = "UPDATE Flights SET Available = " + availSeats + " WHERE flightN = " + flNb + ";";
                     stmt.executeUpdate(remove1FromAvailSeats);
 
+                    stmt = connection.createStatement();
+                    String getAllTicketNumbers = "SELECT * FROM ReservedFlights ORDER BY TicketN;";
+                    List<Integer> list = new ArrayList<>();
+                    ResultSet resultSet = stmt.executeQuery(getAllTicketNumbers);
+                    while(resultSet.next()){
+                        list.add(resultSet.getInt("TicketN"));
+                    }
+                    
+                    int ticketN = 1;
+                    
+                    if (!list.isEmpty())
+                    {
+                        ticketN = list.get(list.get(list.size() - 1)) + 1;
+                    }
+                    
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-mm-dd");
                     LocalDateTime now = LocalDateTime.now();
 
 
-                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%s',%d,'%s',"
-                            + "'%s','%s',%f);", flightNumber, getPassNumber(),getFullName(),
+                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%d','%s',%d,'%s',"
+                            + "'%s','%s',%f);",ticketN, flightNumber, getPassNumber(),getFullName(),
                             "" + dtf.format(now),getContact(),flight.getAmount());
                     stmt.executeUpdate(addEntry);
                     return true;
