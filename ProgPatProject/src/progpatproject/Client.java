@@ -59,8 +59,8 @@ public class Client {
 
 
                     String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%s',%d,'%s',"
-                            + "'%t','%s',%f);", flightNumber, getPassNumber(),getFullName(),
-                            dtf.format(now),getContact(),flight.getAmount());
+                            + "'%s','%s',%f);", flightNumber, getPassNumber(),getFullName(),
+                            "" + dtf.format(now),getContact(),flight.getAmount());
                     stmt.executeUpdate(addEntry);
                     return true;
                 }

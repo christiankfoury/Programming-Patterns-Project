@@ -160,7 +160,7 @@ public class Flight {
             // checking if there is available and selecting amount if there is available
             // in one shot
             String queryTable = String.format("SELECT Available, Amount FROM Flights WHERE "
-                    + "FlightN = '%s;", flight);
+                    + "FlightN = '%s';", flight);
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             int available = -1;
@@ -184,7 +184,7 @@ public class Flight {
             java.util.Date date = new java.util.Date();
 
             String insertTable = String.format("INSERT INTO ReservedFlights (FlightN, PassNum, FlName, IssueDate, Contact, Amount)"
-                    + "VALUES ('%s', '%s', '%s', '%s, '%s', '%f')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
+                    + "VALUES ('%s', '%s', '%s', '%s', '%s', '%f')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
             statement.executeUpdate(insertTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

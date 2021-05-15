@@ -11,6 +11,8 @@ import java.util.*;
  * @author Christian
  */
 public class InputOutput {
+    
+    private final Connection connection = SingleConnection.getInstance();
 
     // the type of the user
     // 1 for manager, 2 for client 
@@ -44,19 +46,20 @@ public class InputOutput {
                     controller.removeFlight(promptRemoveFlight());
                     break;
                 case 3:
-                    // Fixing.
+                    // Need to fix "[SQLITE_ERROR] SQL error or missing database (near "'Dest'": syntax error)".
                     List<String> list = promptUpdateFlight();
                     controller = new Controller(getFlight(),null);
                     controller.updateFlightData(list.get(0),list.get(1),list.get(2));
                     break;
                 case 4:
-                    // Need to fix NullPointerException.
+                    // Need to fix "[SQLITE_ERROR] SQL error or missing database (near "Available": syntax error)" error.
                     List<Object> issueTicketList = promptIssueTicket();
-                    controller = new Controller(getFlight(),(Client)issueTicketList.get(1));
-                    controller.issueTicket((String)issueTicketList.get(0),(Client)issueTicketList.get(1));
+                    controller = new Controller(getFlight(),null);
+                    Client client = controller.getClient((int)issueTicketList.get(1));
+                    controller.issueTicket((String)issueTicketList.get(0),client);
                     break;
                 case 5:
-                    // Will look into after IssueTicket is done.
+                    // Can only check once IssueTicket is done.
                     List<Integer> cancelFlightList = promptCancelFlight();
                     controller = new Controller(getFlight(),null);
                     controller.cancelFlight(cancelFlightList.get(0), cancelFlightList.get(1));
@@ -314,7 +317,6 @@ public class InputOutput {
             System.out.println("Please enter the flight number: ");
             if(input.hasNextLine()){
                 flightNumber += input.nextLine();
-                System.out.println(flightNumber);
                 
                 if(flightNumber.isEmpty()){
                 throw new InputMismatchException();
@@ -359,11 +361,10 @@ public class InputOutput {
     }
     
     public static List<Object> promptIssueTicket(){
-        List<Object> list = null;
+        List<Object> list = new ArrayList<>(1);
         String flightNumber = "";
-        String fullName = "";
+
         int passNum = 0;
-        String contact = "";
         
         try{
             Scanner input = new Scanner(System.in);
@@ -371,39 +372,24 @@ public class InputOutput {
             System.out.println("Please enter the flight number: ");
             if(input.hasNextLine()){
                 flightNumber += input.nextLine();
-            }
-            if (flightNumber.isEmpty()){
+                
+                if (flightNumber.isEmpty()){
                 throw new InputMismatchException();
+                }
+                
+                list.add(flightNumber);
             }
-            
-            System.out.println("Please enter the client's full name: ");
-            if(input.hasNextLine()){
-                fullName += input.nextLine();
-            }
-            if(fullName.isEmpty()){
-                throw new InputMismatchException();
-            }
-            
+
             System.out.println("Please enter the client's passport number: ");
             if(input.hasNextInt()){
                 passNum += input.nextInt();
-            }
-            if(passNum == 0){
+            
+                if(passNum == 0){
                 throw new InputMismatchException();
+                }
+                list.add(passNum);
             }
             
-            System.out.println("Please enter the client's contact: ");
-            if(input.hasNextLine()){
-                contact += input.nextLine();
-            }
-            if(contact.isEmpty()){
-                throw new InputMismatchException();
-            }
-            
-            Client client = new Client(fullName,passNum,contact);
-            
-            list.add(flightNumber);
-            list.add(client);
             
             if(list.isEmpty()){
                 throw new InputMismatchException();
@@ -456,7 +442,7 @@ public class InputOutput {
             return null;
         }
     }
-    
+        
     public static String promptBookASeat(){
         String flightNumber = "";
         

@@ -1,7 +1,9 @@
 package progpatproject;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +112,29 @@ public class Controller {
     
     public void viewFlightBoard() throws SQLException{
         flightsView.printData(client.viewFlightBoard());
+    }
+    
+    public Client getClient(int passNum){
+        try{
+            Statement stmt = connection.createStatement();
+            String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNum);
+        
+            ResultSet rs = stmt.executeQuery(getClient);
+            Client client = null;
+            while(rs.next()){
+                String fullName = rs.getString("FlName");
+                String contact = rs.getString("Contact");
+                client = new Client(fullName,passNum,contact);
+            }
+            if(client == null){
+                throw new Exception();
+            }
+            else return client;
+        }
+        catch(Exception e){
+            System.err.println("Error: " + e + ", Client does not exist.");
+            return null;
+        }
     }
     
 }
