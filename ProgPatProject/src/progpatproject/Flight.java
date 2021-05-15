@@ -214,12 +214,38 @@ public class Flight {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-
+        
         try {
             Statement statement = connection.createStatement();
+            // check if ticket already exists
+            String queryTable = String.format("SELECT FlightN FROM ReservedFlights WHERE "
+                    + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
+            ResultSet resultSet = statement.executeQuery(queryTable);
+
+            String flight = "";
+            while (resultSet.next()) {
+                flight = resultSet.getString("FlightN");
+            }
+            
+            int available = -1;
+            statement = connection.createStatement();
+            queryTable = String.format("SELECT Available FROM Flights WHERE "
+                    + "FlightN = '%s';", flight);
+            resultSet = statement.executeQuery(queryTable);
+            
+            while (resultSet.next()) {
+                available = resultSet.getInt("Available");
+            }
+            
+            statement = connection.createStatement();
             String updateInTable = String.format("DELETE FROM ReservedFlights WHERE "
                     + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
             statement.executeUpdate(updateInTable);
+            
+            statement = connection.createStatement();
+            updateInTable = String.format("UPDATE Flights SET Available = %d WHERE FlightN = '%s'", available, flight);
+            statement.executeUpdate(updateInTable);
+            
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);

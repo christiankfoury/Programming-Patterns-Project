@@ -24,12 +24,13 @@ public class InputOutput {
             int choice = -1;
 
             while (!new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7)).contains(choice)) {
-                System.out.println("Your input is wrong");
                 printManagerChoice();
                 try {
                     Scanner scanner = new Scanner(System.in);
                     if (scanner.hasNextInt()) {
                         choice = scanner.nextInt();
+                    } else {
+                        System.out.println("Your input is wrong");
                     }
                 } catch (NumberFormatException exception) {
                 }
@@ -77,7 +78,9 @@ public class InputOutput {
             }
         } else if (userType == 2) {
             Client client = null;
+            client = promptClientInfoInput();
             while (client == null) {
+                System.out.println("This client does not exist");
                 client = promptClientInfoInput();
             }
             int choice = 0;
@@ -116,7 +119,7 @@ public class InputOutput {
                         correctInput = true;
                         break;
                     default:
-                        System.err.println("Please select a valid option!");
+                        System.out.println("Please select a valid option!");
                         correctInput = false;
                         break;
                 }
@@ -170,75 +173,72 @@ public class InputOutput {
 
     public static Flight promptAddFlight() {
         String flightN, name, origin, dest;
-        flightN = name = origin = dest = "";
-        int duration = 0, seats = 0;
-        double amount = 0;
-        try {
-            Scanner scanner = new Scanner(System.in);
+//        flightN = name = origin = dest = "";
+        int duration, seats;
+        double amount;
 
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter the flight number");
+        flightN = scanner.nextLine();
+        while (flightN.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
             System.out.println("Enter the flight number");
             flightN = scanner.nextLine();
-            while (flightN.trim().isEmpty()) {
-                System.out.println("Your input is wrong.");
-                System.out.println("Enter the flight number");
-                flightN = scanner.nextLine();
-            }
+        }
 
+        System.out.println("Enter the name of the aircraft");
+        name = scanner.nextLine();
+        while (name.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
             System.out.println("Enter the name of the aircraft");
             name = scanner.nextLine();
-            while (name.trim().isEmpty()) {
-                System.out.println("Your input is wrong.");
-                System.out.println("Enter the name of the aircraft");
-                name = scanner.nextLine();
-            }
+        }
 
+        System.out.println("Enter the origin of the flight");
+        origin = scanner.nextLine();
+        while (origin.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
             System.out.println("Enter the origin of the flight");
             origin = scanner.nextLine();
-            while (origin.trim().isEmpty()) {
-                System.out.println("Your input is wrong.");
-                System.out.println("Enter the origin of the flight");
-                origin = scanner.nextLine();
-            }
+        }
 
+        System.out.println("Enter the destination of the flight");
+        dest = scanner.nextLine();
+        while (dest.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
             System.out.println("Enter the destination of the flight");
             dest = scanner.nextLine();
-            while (dest.trim().isEmpty()) {
-                System.out.println("Your input is wrong.");
-                System.out.println("Enter the destination of the flight");
-                dest = scanner.nextLine();
-            }
+        }
 
+        System.out.println("Enter the duration of the flight");
+        String input = scanner.nextLine();
+        while (!isInteger(input)) {
+            System.out.println("Your input is wrong.");
             System.out.println("Enter the duration of the flight");
-            String input = scanner.nextLine();
-            while (!isInteger(input)) {
-                System.out.println("Your input is wrong.");
-                System.out.println("Enter the duration of the flight");
-                input = scanner.nextLine();
-            }
-            duration = Integer.parseInt(input);
+            input = scanner.nextLine();
+        }
+        duration = Integer.parseInt(input);
 
+        System.out.println("Enter the number of seats");
+        input = scanner.nextLine();
+        while (!isInteger(input)) {
+            System.out.println("Your input is wrong.");
             System.out.println("Enter the number of seats");
             input = scanner.nextLine();
-            while (!isInteger(input)) {
-                System.out.println("Your input is wrong.");
-                System.out.println("Enter the number of seats");
-                input = scanner.nextLine();
-            }
-            seats = Integer.parseInt(input);
-            // no prompt for the available amount of seats since
-            // the flight has just been addec
+        }
+        seats = Integer.parseInt(input);
+        // no prompt for the available amount of seats since
+        // the flight has just been addec
 
+        System.out.println("Enter the amount of flight");
+        input = scanner.nextLine();
+        while (!isDouble(input)) {
+            System.out.println("Your input is wrong!");
             System.out.println("Enter the amount of flight");
             input = scanner.nextLine();
-            while (!isDouble(input)) {
-                System.out.println("Your input is wrong!");
-                System.out.println("Enter the amount of flight");
-                input = scanner.nextLine();
-            }
-            amount = Double.parseDouble(input);
-
-        } catch (NumberFormatException exception) {
         }
+        amount = Double.parseDouble(input);
 
         return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
     }
@@ -248,6 +248,7 @@ public class InputOutput {
 
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Please enter the flight number: ");
         flightNumber = scanner.nextLine();
         while (flightNumber.trim().isEmpty()) {
             System.out.println("Your input is wrong!");
@@ -282,7 +283,7 @@ public class InputOutput {
         while (!new ArrayList<>(Arrays.asList("origin", "dest", "duration")).contains(field.toLowerCase())) {
             System.out.println("Your input is wrong!");
             System.out.println("Please enter the field that you would like to update (origin, destination, duration): ");
-            field += scanner.nextLine();
+            field = scanner.nextLine();
         }
 
         list.add(field);
@@ -336,6 +337,11 @@ public class InputOutput {
             System.out.println("Please enter the client's passport number: ");
             input = scanner.nextLine();
         }
+        if (checkClient(Integer.parseInt(input)) == null) {
+            System.out.println("The client does not exist. Let's restart the process");
+            return promptIssueTicket();
+        }
+
         list.add(Integer.parseInt(input));
 
         return list;
@@ -384,27 +390,24 @@ public class InputOutput {
     }
 
     public static Client checkClient(int passNumber) {
-
+        Client client = null;
         try {
             Connection connection = SingleConnection.getInstance();
             Statement stmt = connection.createStatement();
 
             String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNumber);
             ResultSet rs = stmt.executeQuery(getClient);
-            Client client = null;
             while (rs.next()) {
                 String fullName = rs.getString("FlName");
                 String contact = rs.getString("Contact");
                 client = new Client(fullName, passNumber, contact);
             }
-            if (client == null) {
-                throw new SQLException();
-            }
-            return client;
+
         } catch (Exception e) {
-            System.err.println("Error: " + e + ", Client does not exist.");
-            return null;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
         }
+        return client;
     }
 
     public static void printClientChoice() {
@@ -474,7 +477,7 @@ public class InputOutput {
             System.out.println("Please enter an origin: ");
             origin = scanner.nextLine();
         }
-        
+
         return origin;
     }
 
