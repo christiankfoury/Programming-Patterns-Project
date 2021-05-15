@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -14,7 +15,7 @@ import java.util.TreeMap;
 public class Flight {
 
     private Connection connection = SingleConnection.getInstance();
-    private String flightN;
+    private String flightN;                 
     private String name;
     private String origin;
     private String destination;
@@ -137,14 +138,14 @@ public class Flight {
             // depdending if the value is string or int/double, there should be
             // quotations surronding the value
             if (new ArrayList<>(Arrays.asList("origin", "dest")).contains(field.toLowerCase())) {
-                updateInTable = String.format("UPDATE Flights"
-                        + "SET '%s' = '%s'"
-                        + "WHERE '%s' = '%s'", field, newValue, field, flightNumber);
+                updateInTable = String.format("UPDATE Flights "
+                        + "SET '%s' = '%s' "
+                        + "WHERE FlightN = '%s';", field, newValue, flightNumber);
             } // else duration
             else {
-                updateInTable = String.format("UPDATE Flights"
-                        + "SET '%s' = %s"
-                        + "WHERE '%s' = '%s'", field, newValue, field, flightNumber);
+                updateInTable = String.format("UPDATE Flights "
+                        + "SET '%s' = %s "
+                        + "WHERE FlightN = '%s';", field, newValue, flightNumber);
             }
             statement.executeUpdate(updateInTable);
         } catch (SQLException e) {
@@ -174,17 +175,17 @@ public class Flight {
             }
 
             statement = connection.createStatement();
-            String updateTable = String.format("UPDATE TABLE"
-                    + "SET Available = %d"
-                    + "WHERE FlightN = '%s'", available - 1, flight);
+            String updateTable = String.format("UPDATE Flights "
+                    + "SET Available = %d "
+                    + "WHERE FlightN = '%s';", available - 1, flight);
             statement.executeUpdate(updateTable);
 
             statement = connection.createStatement();
             //                                                                                                                                  AUTO-INCREMENT
             java.util.Date date = new java.util.Date();
 
-            String insertTable = String.format("INSERT INTO ReservedFlights (FlightN, PassNum, FlName, IssueDate, Contact, Amount)"
-                    + "VALUES ('%s', '%s', '%s', '%s', '%s', '%f')", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
+            String insertTable = String.format("INSERT INTO ReservedFlights (FlightN, PassNum, FlName, IssueDate, Contact, Amount) "
+                    + "VALUES ('%s', '%s', '%s', '%s', '%s', '%f');", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
             statement.executeUpdate(insertTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -248,7 +249,7 @@ public class Flight {
     }
 
     public static Map<String, String> viewBookedFlights() {
-        TreeMap<String, String> map = new TreeMap<>();
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
         Connection connection = SingleConnection.getInstance();
         try {
             Statement statement = connection.createStatement();
@@ -256,7 +257,7 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put("FlightN" + resultSet.getString("FlightN"), " TicketN" + resultSet.getString("TicketN")
+                map.put("TicketN" + resultSet.getString("TicketN"), " FlightN" + resultSet.getString("FlightN")
                         + ", PassNum" + resultSet.getString("PassNum") + ", FLName" + resultSet.getString("FLName")
                         + ", IssueDate" + resultSet.getString("IssueDate") + ", Contact" + resultSet.getString("Contact")
                         + ", Amount" + resultSet.getString("Amount"));

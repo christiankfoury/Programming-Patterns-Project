@@ -32,7 +32,7 @@ public class Controller {
             System.out.println("Flight has been successfully added!");
         }
         else{
-            System.err.println("Check your input, flight has not been added.");
+            System.err.println("Flight already exists.");
         }
     }
     
@@ -41,7 +41,7 @@ public class Controller {
             System.out.println("Flight has been successfully removed!");
         }
         else{
-            System.err.println("Check your input, flight has not been removed.");
+            System.err.println("Flight does not exist.");
         }
     }
     
@@ -50,7 +50,7 @@ public class Controller {
             System.out.println("Flight information has been updated.");
         }
         else{
-            System.err.println("");
+            System.err.println("Flight does not exist.");
         }
     }
     
@@ -59,7 +59,7 @@ public class Controller {
             System.out.println("A ticket has been issued to the client.");
         }
         else{
-            System.err.println("");
+            System.err.println("No more seats available");
         }
     }
     
