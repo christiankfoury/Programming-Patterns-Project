@@ -11,7 +11,7 @@ import java.util.*;
  * @author Christian
  */
 public class InputOutput {
-    
+
     private final Connection connection = SingleConnection.getInstance();
 
     // the type of the user
@@ -42,91 +42,89 @@ public class InputOutput {
                     break;
                 case 2:
                     // Works
-                    controller = new Controller(getFlight(),null);
+                    controller = new Controller(getFlight(), null);
                     controller.removeFlight(promptRemoveFlight());
                     break;
                 case 3:
-                    // Need to fix "[SQLITE_ERROR] SQL error or missing database (near "'Dest'": syntax error)".
+                    // Works
                     List<String> list = promptUpdateFlight();
-                    controller = new Controller(getFlight(),null);
-                    controller.updateFlightData(list.get(0),list.get(1),list.get(2));
+                    controller = new Controller(getFlight(), null);
+                    controller.updateFlightData(list.get(0), list.get(1), list.get(2));
                     break;
                 case 4:
-                    // Need to fix "[SQLITE_ERROR] SQL error or missing database (near "Available": syntax error)" error.
+                    // Works
                     List<Object> issueTicketList = promptIssueTicket();
-                    controller = new Controller(getFlight(),null);
-                    Client client = controller.getClient((int)issueTicketList.get(1));
-                    controller.issueTicket((String)issueTicketList.get(0),client);
+                    controller = new Controller(getFlight(), null);
+                    Client client = controller.getClient((int) issueTicketList.get(1));
+                    controller.issueTicket((String) issueTicketList.get(0), client);
                     break;
                 case 5:
                     // Can only check once IssueTicket is done.
                     List<Integer> cancelFlightList = promptCancelFlight();
-                    controller = new Controller(getFlight(),null);
+                    controller = new Controller(getFlight(), null);
                     controller.cancelFlight(cancelFlightList.get(0), cancelFlightList.get(1));
                     break;
                 case 6:
                     // Works
-                    controller = new Controller(getFlight(),null);
+                    controller = new Controller(getFlight(), null);
                     controller.viewBoard();
                     break;
                 case 7:
                     // Works
-                    controller = new Controller(getFlight(),null);
+                    controller = new Controller(getFlight(), null);
                     controller.viewBookedFlights();
                     break;
             }
-        }
-        else if (userType == 2){
+        } else if (userType == 2) {
             Client client = null;
-            while(client == null){
+            while (client == null) {
                 client = promptClientInfoInput();
             }
             int choice = 0;
             Controller controller = new Controller(getFlight(), client);
             boolean correctInput = false;
-            while (!correctInput)
-            {
+            while (!correctInput) {
                 printClientChoice();
                 Scanner input = new Scanner(System.in);
-                if(input.hasNextInt()){
+                if (input.hasNextInt()) {
                     choice += input.nextInt();
                 }
                 switch (choice) {
-                case 1:
-                    // Works
-                    controller.bookASeat(promptBookASeat());
-                    correctInput = true;
-                    break;
-                case 2:
-                    // Works.
-                    controller.cancelReservation(promptCancelReservation());
-                    correctInput = true;
-                    break;
-                case 3:
-                    // Works.
-                    controller.searchFlightByDestination(promptSearchFlightsByDestination());
-                    correctInput = true;
-                    break;
-                case 4:
-                    //Works
-                    controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
-                    correctInput = true;
-                    break;
-                case 5:
-                    //Works
-                    controller.viewFlightBoard();
-                    correctInput = true;
-                    break;
-                default:
-                    System.err.println("Please select a valid option!");
-                    correctInput = false;
-                    break;
+                    case 1:
+                        // Works
+                        controller.bookASeat(promptBookASeat());
+                        correctInput = true;
+                        break;
+                    case 2:
+                        // Works.
+                        controller.cancelReservation(promptCancelReservation());
+                        correctInput = true;
+                        break;
+                    case 3:
+                        // Works.
+                        controller.searchFlightByDestination(promptSearchFlightsByDestination());
+                        correctInput = true;
+                        break;
+                    case 4:
+                        //Works
+                        controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
+                        correctInput = true;
+                        break;
+                    case 5:
+                        //Works
+                        controller.viewFlightBoard();
+                        correctInput = true;
+                        break;
+                    default:
+                        System.err.println("Please select a valid option!");
+                        correctInput = false;
+                        break;
                 }
-            }  
+            }
         }
     }
 
-    public static Flight getFlight(){
+    public static Flight getFlight() {
         String flightNumber = "";
         String name = "";
         String origin = "";
@@ -135,10 +133,10 @@ public class InputOutput {
         int seats = 0;
         int availableSeats = 0;
         double amount = 0.0;
-        
-        return new Flight(flightNumber,name,origin,destination,duration,seats,availableSeats,amount);
+
+        return new Flight(flightNumber, name, origin, destination, duration, seats, availableSeats, amount);
     }
-    
+
     public static void promptUserType() {
         try {
             Scanner scanner = new Scanner(System.in);
@@ -172,32 +170,44 @@ public class InputOutput {
 
     public static Flight promptAddFlight() {
         String flightN, name, origin, dest;
-        flightN = name = origin = dest = null;
+        flightN = name = origin = dest = "";
         int duration = 0, seats = 0;
         double amount = 0;
         try {
             Scanner scanner = new Scanner(System.in);
-            
+
             System.out.println("Enter the flight number");
-            if (scanner.hasNextLine()) {
-                flightN = scanner.nextLine(); 
+            flightN = scanner.nextLine();
+            while (flightN.trim().isEmpty()) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Enter the flight number");
+                flightN = scanner.nextLine();
             }
-            
+
             System.out.println("Enter the name of the aircraft");
-            if (scanner.hasNextLine()) {
+            name = scanner.nextLine();
+            while (name.trim().isEmpty()) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Enter the name of the aircraft");
                 name = scanner.nextLine();
             }
-            
+
             System.out.println("Enter the origin of the flight");
-            if (scanner.hasNextLine()) {
+            origin = scanner.nextLine();
+            while (origin.trim().isEmpty()) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Enter the origin of the flight");
                 origin = scanner.nextLine();
             }
-            
+
             System.out.println("Enter the destination of the flight");
-            if (scanner.hasNextLine()) {
+            dest = scanner.nextLine();
+            while (dest.trim().isEmpty()) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Enter the destination of the flight");
                 dest = scanner.nextLine();
             }
-            
+
             System.out.println("Enter the duration of the flight");
             String input = scanner.nextLine();
             while (!isInteger(input)) {
@@ -206,7 +216,7 @@ public class InputOutput {
                 input = scanner.nextLine();
             }
             duration = Integer.parseInt(input);
-            
+
             System.out.println("Enter the number of seats");
             input = scanner.nextLine();
             while (!isInteger(input)) {
@@ -217,7 +227,7 @@ public class InputOutput {
             seats = Integer.parseInt(input);
             // no prompt for the available amount of seats since
             // the flight has just been addec
-            
+
             System.out.println("Enter the amount of flight");
             input = scanner.nextLine();
             while (!isDouble(input)) {
@@ -226,315 +236,249 @@ public class InputOutput {
                 input = scanner.nextLine();
             }
             amount = Double.parseDouble(input);
-            
+
         } catch (NumberFormatException exception) {
         }
 
         return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
     }
-    
-    public static String promptRemoveFlight(){
+
+    public static String promptRemoveFlight() {
         String flightNumber = "";
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
+
+        Scanner scanner = new Scanner(System.in);
+
+        flightNumber = scanner.nextLine();
+        while (flightNumber.trim().isEmpty()) {
+            System.out.println("Your input is wrong!");
             System.out.println("Please enter the flight number: ");
-            if(input.hasNextLine()){
-                flightNumber += input.nextLine();
-            }
-            if(flightNumber.isEmpty()){
-                throw new InputMismatchException();
-            }
-            
-            return flightNumber;
-            
+            flightNumber = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", The Flight could not be removed.");
-            return null;
-        }
+
+        return flightNumber;
     }
-    
-    public static List<String> promptUpdateFlight(){
+
+    public static List<String> promptUpdateFlight() {
         String flightNumber = "";
         String field = "";
         String newValue = "";
         List<String> list = new ArrayList<String>();
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter the flight number: ");
+        flightNumber = scanner.nextLine();
+
+        while (flightNumber.trim().isEmpty()) {
+            System.out.println("Your input is wrong!");
             System.out.println("Please enter the flight number: ");
-            if(input.hasNextLine()){
-                flightNumber += input.nextLine();
-                
-                if(flightNumber.isEmpty()){
-                throw new InputMismatchException();
-                }
-                
-                list.add(flightNumber);
-            }
-            System.out.println("Please enter the field that you would like to update: ");
-            if(input.hasNextLine()){
-                field += input.nextLine();
-                
-                if(field.isEmpty()){
-                throw new InputMismatchException();
-                }
-                
-                list.add(field);                
-            }
-            
-            System.out.println("Please enter the new value: ");
-            if(input.hasNextLine()){
-                newValue += input.nextLine();
-                
-                if(newValue.isEmpty()){
-                throw new InputMismatchException();
-                }
-                
-                list.add(newValue);
-            }
-            
-            if(list.isEmpty()){
-                throw new InputMismatchException();
-            }
-            else{
-                return list;
-            }
-            
+            flightNumber = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return null;
+        list.add(flightNumber);
+
+        System.out.println("Please enter the field that you would like to update (origin, destination, duration): ");
+        field = scanner.nextLine();
+
+        while (!new ArrayList<>(Arrays.asList("origin", "dest", "duration")).contains(field.toLowerCase())) {
+            System.out.println("Your input is wrong!");
+            System.out.println("Please enter the field that you would like to update (origin, destination, duration): ");
+            field += scanner.nextLine();
         }
+
+        list.add(field);
+
+        if (field.equalsIgnoreCase("duration")) {
+            System.out.println("Please enter the new value (number): ");
+            newValue = scanner.nextLine();
+
+            while (!isInteger(newValue)) {
+                System.out.println("Your input is wrong.");
+                System.out.println("Please enter the new value (number): ");
+                newValue = scanner.nextLine();
+            }
+        } else {
+            System.out.println("Please enter the new value : ");
+            newValue = scanner.nextLine();
+
+            while (newValue.trim().isEmpty()) {
+                System.out.println("Your input is wrong!");
+                System.out.println("Please enter the new value : ");
+                newValue = scanner.nextLine();
+            }
+        }
+
+        list.add(newValue);
+
+        return list;
     }
-    
-    public static List<Object> promptIssueTicket(){
+
+    public static List<Object> promptIssueTicket() {
         List<Object> list = new ArrayList<>(1);
         String flightNumber = "";
 
-        int passNum = 0;
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
-            System.out.println("Please enter the flight number: ");
-            if(input.hasNextLine()){
-                flightNumber += input.nextLine();
-                
-                if (flightNumber.isEmpty()){
-                throw new InputMismatchException();
-                }
-                
-                list.add(flightNumber);
-            }
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Please enter the flight number: ");
+        flightNumber = scanner.nextLine();
+
+        while (flightNumber.trim().isEmpty()) {
+            System.out.println("Your input is wrong!");
+            System.out.println("Please enter the flight number: ");
+            flightNumber = scanner.nextLine();
+        }
+        list.add(flightNumber);
+        // PASSPORT NUMBER CAN BE 0 NO?
+        System.out.println("Please enter the client's passport number: ");
+        String input = scanner.nextLine();
+
+        while (!isInteger(input) || input.startsWith("0")) {
+            System.out.println("Your input is wrong. Note: Passport number cannot be 0");
             System.out.println("Please enter the client's passport number: ");
-            if(input.hasNextInt()){
-                passNum += input.nextInt();
-            
-                if(passNum == 0){
-                throw new InputMismatchException();
-                }
-                list.add(passNum);
-            }
-            
-            
-            if(list.isEmpty()){
-                throw new InputMismatchException();
-            }
-            
-            return list;  
+            input = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return null;
-        }
+        list.add(Integer.parseInt(input));
+
+        return list;
     }
-    
-    public static List<Integer> promptCancelFlight(){
-        List<Integer> list = null;
-        int ticketNumber = 0;
-        int passNumber = 0;
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
+
+    public static List<Integer> promptCancelFlight() {
+        List<Integer> list = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter the ticket number: ");
+        String input = scanner.nextLine();
+
+        while (!isInteger(input) || input.startsWith("0")) {
+            System.out.println("Your input is wrong. Note: Ticket number cannot be 0");
             System.out.println("Please enter the ticket number: ");
-            if(input.hasNextInt()){
-                ticketNumber += input.nextInt();
-            }
-            if(ticketNumber==0){
-                throw new InputMismatchException();
-            }
-            
+            input = scanner.nextLine();
+        }
+        list.add(Integer.parseInt(input));
+
+        System.out.println("Please enter the passport number: ");
+        input = scanner.nextLine();
+
+        while (!isInteger(input) || input.startsWith("0")) {
+            System.out.println("Your input is wrong. Note: Passport number cannot be 0");
             System.out.println("Please enter the passport number: ");
-            if(input.hasNextInt()){
-                passNumber += input.nextInt();
-            }
-            if(passNumber==0){
-                throw new InputMismatchException();
-            }
-            
-            list.add(ticketNumber);
-            list.add(passNumber);
-            
-            if(list.isEmpty()){
-                throw new InputMismatchException();
-            }
-            
-            return list;
+            input = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return null;
-        }
+        list.add(Integer.parseInt(input));
+
+        return list;
+
     }
-    
-        public static Client promptClientInfoInput(){
-        int passNum = 0;
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
-            System.out.println("Please enter your passport number: ");
-            if(input.hasNextInt()){
-                passNum += input.nextInt();
-            }
-            if(passNum == 0){
-                throw new InputMismatchException();
-            }
-            return checkClient(passNum);
+
+
+    public static Client promptClientInfoInput() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter your passport number: ");
+
+        String input = scanner.nextLine();
+        while (!isInteger(input) || input.startsWith("0")) {
+            System.out.println("Your input is wrong. Note: Passport number cannot be 0");
+            System.out.println("Please enter the passport number: ");
+            input = scanner.nextLine();
         }
-        catch(Exception e){
-            System.err.println("Error: " + e + ", please check your input.");
-            return null;
-        }
+
+        return checkClient(Integer.parseInt(input));
     }
-    
-    public static Client checkClient(int passNumber){
-        
-        try{
+
+    public static Client checkClient(int passNumber) {
+
+        try {
             Connection connection = SingleConnection.getInstance();
             Statement stmt = connection.createStatement();
-            
+
             String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNumber);
             ResultSet rs = stmt.executeQuery(getClient);
             Client client = null;
-            while(rs.next()){
+            while (rs.next()) {
                 String fullName = rs.getString("FlName");
                 String contact = rs.getString("Contact");
-                client = new Client(fullName,passNumber,contact);
+                client = new Client(fullName, passNumber, contact);
             }
-            if(client == null){
+            if (client == null) {
                 throw new SQLException();
             }
             return client;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.err.println("Error: " + e + ", Client does not exist.");
             return null;
         }
     }
-    
-    public static void printClientChoice(){
+
+    public static void printClientChoice() {
         System.out.println("Press 1 to book a seat");
         System.out.println("Press 2 to cancel a reservation");
         System.out.println("Press 3 to search flights by destination");
         System.out.println("Press 4 to search flights by origin");
         System.out.println("Press 5 to view the flights board");
     }
-        
-    public static String promptBookASeat(){
-        String flightNumber = "";
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
-            System.out.println("Please enter the flight number: ");
-            if(input.hasNextLine()){
-                flightNumber += input.nextLine();
-            }
-            if(flightNumber.isEmpty()){
-                throw new InputMismatchException();
-            }
-            
-            return flightNumber;
+
+    public static String promptBookASeat() {
+        String flightN = "";
+        Scanner input = new Scanner(System.in);
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter the flight number: ");
+        flightN = scanner.nextLine();
+        while (flightN.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
+            System.out.println("Enter the flight number");
+            flightN = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return null;
-        }
+
+        return flightN;
     }
-    
-    public static int promptCancelReservation(){
-        int ticketNum = 0;
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
+
+    public static int promptCancelReservation() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter the ticket number: ");
+        String input = scanner.nextLine();
+
+        while (!isInteger(input) || input.startsWith("0")) {
+            System.out.println("Your input is wrong. Note: Ticket number cannot be 0");
             System.out.println("Please enter the ticket number: ");
-            if(input.hasNextInt()){
-                ticketNum += input.nextInt();
-            }
-            if(ticketNum == 0){
-                throw new InputMismatchException();
-            }
-            
-            return ticketNum;
+            input = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return 0;
-        }
+
+        return Integer.parseInt(input);
     }
-    
-    public static String promptSearchFlightsByDestination(){
-        String destination = "";
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
+
+    public static String promptSearchFlightsByDestination() {
+        String dest = "";
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter a destination: ");
+        dest = scanner.nextLine();
+        while (dest.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
             System.out.println("Please enter a destination: ");
-            if(input.hasNextLine()){
-                destination += input.nextLine();
-                
-                if(destination.isEmpty()){
-                throw new InputMismatchException();
-                }
-            }
-            
-            return destination;
+            dest = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return null;
-        }
+
+        return dest;
     }
-    
-    public static String promptSearchFlightsByOrigin(){
+
+    public static String promptSearchFlightsByOrigin() {
         String origin = "";
-        
-        try{
-            Scanner input = new Scanner(System.in);
-            
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter an origin: ");
+        origin = scanner.nextLine();
+        while (origin.trim().isEmpty()) {
+            System.out.println("Your input is wrong.");
             System.out.println("Please enter an origin: ");
-            if(input.hasNextLine()){
-                origin += input.nextLine();
-            }
-            if(origin.isEmpty()){
-                throw new InputMismatchException();
-            }
-            return origin;
+            origin = scanner.nextLine();
         }
-        catch(InputMismatchException e){
-            System.err.println("Error: " + e + ", Please verify your input!");
-            return null;
-        }
+        
+        return origin;
     }
-    
+
     public static boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
@@ -544,7 +488,7 @@ public class InputOutput {
         // only got here if we didn't return false
         return true;
     }
-    
+
     public static boolean isDouble(String s) {
         try {
             Double.parseDouble(s);
@@ -554,4 +498,30 @@ public class InputOutput {
         // only got here if we didn't return false
         return true;
     }
+
+    // We can try to use this method because this method is strategy?
+    public static int isDataExists(String queryTable) {
+        Connection connection = SingleConnection.getInstance();
+        int count = -1;
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(queryTable);
+
+            while (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        return count;
+    }
 }
+
+//if (InputOutput.isDataExists(String.format("SELECT COUNT(*) FROM Flights where FlightN = '%s'", flight)) == 0) {
+//    return false;
+//}
+//if (InputOutput.isDataExists(String.format("SELECT COUNT(*) FROM Clients where PassNum = %d", client.getPassNumber())) == 0) {
+//    return false;
+//}
