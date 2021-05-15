@@ -256,10 +256,10 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put("FlightN" + resultSet.getString("FlightN"), " TicketN" + resultSet.getString("TicketN")
-                        + ", PassNum" + resultSet.getString("PassNum") + ", FLName" + resultSet.getString("FLName")
-                        + ", IssueDate" + resultSet.getString("IssueDate") + ", Contact" + resultSet.getString("Contact")
-                        + ", Amount" + resultSet.getString("Amount"));
+                map.put("FlightN: " + resultSet.getString("FlightN"), " TicketN: " + resultSet.getString("TicketN")
+                        + ", PassNum: " + resultSet.getString("PassNum") + ", FLName: " + resultSet.getString("FLName")
+                        + ", IssueDate: " + resultSet.getString("IssueDate") + ", Contact: " + resultSet.getString("Contact")
+                        + ", Amount: " + resultSet.getString("Amount"));
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
