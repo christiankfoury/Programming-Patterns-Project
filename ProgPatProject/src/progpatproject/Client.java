@@ -7,8 +7,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -122,7 +124,7 @@ public class Client {
             String destinationString = "'" + destination + "'";
             String getFlight = "SELECT * FROM Flights WHERE Dest = " + destinationString + " ORDER BY flightN;";
             Flight flight = null;
-            List<Flight> list = null;
+            List<Flight> list = new ArrayList<>();
 
             ResultSet rs = stmt.executeQuery(getFlight);
                 while(rs.next()){
@@ -179,7 +181,7 @@ public class Client {
             String flightOrigin = "'" + origin + "'";
             String getFlight = "SELECT * FROM Flights WHERE Origin = " + flightOrigin + " ORDER BY flightN;";
             Flight flight = null;
-            List<Flight> list = null;
+            List<Flight> list = new ArrayList<>();
 
             ResultSet rs = stmt.executeQuery(getFlight);
              while(rs.next()){
@@ -207,7 +209,7 @@ public class Client {
             Statement stmt = connection.createStatement();
             String getFlight = "SELECT * FROM Flights ORDER BY flightN;";
             Flight flight = null;
-            Map<String, String> map = null;
+            TreeMap<String, String> map = new TreeMap();
 
 
             ResultSet rs = stmt.executeQuery(getFlight);
@@ -222,8 +224,8 @@ public class Client {
              double price = rs.getDouble("Amount");
 
              flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
-             map.put(number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
-                     + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f }"
+             map.put("Flight Number: " + number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
+                     + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f}"
                      ,name,origin,destination,duration,totalSeats,availSeats,price));
              }
             return map;

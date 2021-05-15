@@ -93,22 +93,27 @@ public class InputOutput {
                 }
                 switch (choice) {
                 case 1:
+                    // Need to fix.
                     controller.bookASeat(promptBookASeat());
                     correctInput = true;
                     break;
                 case 2:
+                    // Need to fix.
                     controller.cancelReservation(promptCancelReservation());
                     correctInput = true;
                     break;
                 case 3:
+                    // Works.
                     controller.searchFlightByDestination(promptSearchFlightsByDestination());
                     correctInput = true;
                     break;
                 case 4:
+                    //Works
                     controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
                     correctInput = true;
                     break;
                 case 5:
+                    //Works
                     controller.viewFlightBoard();
                     correctInput = true;
                     break;
@@ -495,11 +500,11 @@ public class InputOutput {
             
             System.out.println("Please enter a destination: ");
             if(input.hasNextLine()){
-                String str = input.nextLine();
-                destination.concat(str);
-            }
-            if(destination.isEmpty()){
+                destination += input.nextLine();
+                
+                if(destination.isEmpty()){
                 throw new InputMismatchException();
+                }
             }
             
             return destination;
