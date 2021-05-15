@@ -375,6 +375,7 @@ public class InputOutput {
 
     }
 
+
     public static Client promptClientInfoInput() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter your passport number: ");
