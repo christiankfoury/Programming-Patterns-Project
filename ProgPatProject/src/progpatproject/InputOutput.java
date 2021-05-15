@@ -399,7 +399,7 @@ public class InputOutput {
         try{
             Scanner input = new Scanner(System.in);
             
-            System.out.println("Please enter you passport number: ");
+            System.out.println("Please enter your passport number: ");
             if(input.hasNextInt()){
                 passNum += input.nextInt();
             }
