@@ -15,6 +15,12 @@ public class ClientsView {
     }
     
     public void printData(List<Flight> flights) {
-        System.out.println(flights);
+        for(Flight flight: flights){
+            System.out.println(String.format("Flight Number: %s, Aircraft Name: %s, "
+                    + "Origin: %s, Destination: %s, Duration: %d, Seats: %d, "
+                    + "Available: %d, Amount: %f",flight.getFlightN(),flight.getName(),
+                    flight.getOrigin(),flight.getDestination(),flight.getDuration(),
+                    flight.getSeats(),flight.getAvailableSeats(),flight.getAmount()));
+        }
     }
 }

@@ -7,8 +7,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -54,13 +56,28 @@ public class Client {
                     String remove1FromAvailSeats = "UPDATE Flights SET Available = " + availSeats + " WHERE flightN = " + flNb + ";";
                     stmt.executeUpdate(remove1FromAvailSeats);
 
+                    stmt = connection.createStatement();
+                    String getAllTicketNumbers = "SELECT * FROM ReservedFlights ORDER BY TicketN;";
+                    List<Integer> list = new ArrayList<>();
+                    ResultSet resultSet = stmt.executeQuery(getAllTicketNumbers);
+                    while(resultSet.next()){
+                        list.add(resultSet.getInt("TicketN"));
+                    }
+                    
+                    int ticketN = 1;
+                    
+                    if (!list.isEmpty())
+                    {
+                        ticketN = list.get(list.get(list.size() - 1)) + 1;
+                    }
+                    
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-mm-dd");
                     LocalDateTime now = LocalDateTime.now();
 
 
-                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%s',%d,'%s',"
-                            + "'%t','%s',%f);", flightNumber, getPassNumber(),getFullName(),
-                            dtf.format(now),getContact(),flight.getAmount());
+                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%d','%s',%d,'%s',"
+                            + "'%s','%s',%f);",ticketN, flightNumber, getPassNumber(),getFullName(),
+                            "" + dtf.format(now),getContact(),flight.getAmount());
                     stmt.executeUpdate(addEntry);
                     return true;
                 }
@@ -122,7 +139,7 @@ public class Client {
             String destinationString = "'" + destination + "'";
             String getFlight = "SELECT * FROM Flights WHERE Dest = " + destinationString + " ORDER BY flightN;";
             Flight flight = null;
-            List<Flight> list = null;
+            List<Flight> list = new ArrayList<>();
 
             ResultSet rs = stmt.executeQuery(getFlight);
                 while(rs.next()){
@@ -179,7 +196,7 @@ public class Client {
             String flightOrigin = "'" + origin + "'";
             String getFlight = "SELECT * FROM Flights WHERE Origin = " + flightOrigin + " ORDER BY flightN;";
             Flight flight = null;
-            List<Flight> list = null;
+            List<Flight> list = new ArrayList<>();
 
             ResultSet rs = stmt.executeQuery(getFlight);
              while(rs.next()){
@@ -207,7 +224,7 @@ public class Client {
             Statement stmt = connection.createStatement();
             String getFlight = "SELECT * FROM Flights ORDER BY flightN;";
             Flight flight = null;
-            Map<String, String> map = null;
+            TreeMap<String, String> map = new TreeMap();
 
 
             ResultSet rs = stmt.executeQuery(getFlight);
@@ -222,8 +239,8 @@ public class Client {
              double price = rs.getDouble("Amount");
 
              flight = new Flight(number,name,origin,destination,duration,totalSeats,availSeats,price);
-             map.put(number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
-                     + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f }"
+             map.put("Flight Number: " + number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
+                     + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f}"
                      ,name,origin,destination,duration,totalSeats,availSeats,price));
              }
             return map;
