@@ -89,7 +89,7 @@ public class Controller {
             System.out.println("A Seat has been booked!");
         }
         else{
-            System.err.println("");
+            System.err.println("This flight does not exist");
         }
     }
     
