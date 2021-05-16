@@ -150,7 +150,7 @@ public class InputOutputManager extends InputOutputUser {
         while (!new ArrayList<>(Arrays.asList("origin", "dest", "duration")).contains(field.toLowerCase())) {
             printChosenLanguage("wrongInputMessage");
             printChosenLanguage("fieldToChangeInput");
-            field += scanner.nextLine();
+            field = scanner.nextLine();
         }
 
         list.add(field);
