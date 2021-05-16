@@ -9,6 +9,10 @@ import java.sql.*;
 public class SingleConnection {
     private static Connection clientsConnection;
     
+    /**
+     * Singleton for getting the connection
+     * @return the connection of the database
+     */
     public static Connection getInstance() {
         if (clientsConnection == null) {
             clientsConnection = createConnection();

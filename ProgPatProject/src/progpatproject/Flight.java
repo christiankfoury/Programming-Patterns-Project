@@ -1,15 +1,7 @@
 package progpatproject;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
-import static progpatproject.InputOutput.res;
+import java.util.*;
 
 /**
  *
@@ -27,6 +19,17 @@ public class Flight {
     private int availableSeats;
     private double amount;
 
+    /**
+     * Constructor for flight
+     * @param flightN the flights number
+     * @param name the name of the flight
+     * @param origin the origin of the flight
+     * @param destination the destination of the flight
+     * @param duration the duration of the flight
+     * @param seats the number of seats of the flight
+     * @param availableSeats the number of available of the flight
+     * @param amount the cost of the flight
+     */
     public Flight(String flightN, String name, String origin, String destination,
             int duration, int seats, int availableSeats, double amount) {
         this.flightN = flightN;
@@ -39,6 +42,12 @@ public class Flight {
         this.amount = amount;
     }
 
+    /**
+     * To add a row into the Flights table. A row is inserted if there is not a
+     * flight with the same flight number
+     * @param flight the flight to be inserted
+     * @return true if a row has been inserted
+     */
     public boolean addFlight(Flight flight) {
         try {
             // Checking if flight already exists
@@ -74,6 +83,12 @@ public class Flight {
         return true;
     }
 
+    /**
+     * To remove a flight row from the Flights table. A row is deleted if there is
+     * an instance of that flight
+     * @param flightNumber the flight number of the flight to be removed
+     * @return true if a row has been removed
+     */
     public boolean removeFlight(String flightNumber) {
         try {
             // Checking if flight does not exist
@@ -106,15 +121,16 @@ public class Flight {
         return true;
     }
 
+    /**
+     * The update the data of a flight in the flights table. Returns true if there is
+     * an instance of this flights and the row has been updated
+     * @param flightNumber the flight number of the flight to be updated
+     * @param field the field of the flight
+     * @param newValue the new value to be updated
+     * @return true Returns true if there is
+     * an instance of this flights and the row has been updated
+     */
     public boolean updateFlightData(String flightNumber, String field, String newValue) {
-        // SHOULD PUT THIS IN THE ACTUAL APPLICATION
-//        ArrayList<String> fields = new ArrayList<>(Arrays.asList("flightn", "name", "origin", "dest",
-//                "duration", "seats", "available", "amount"));
-//
-//        if (!fields.contains(field.toLowerCase())) {
-//            return false;
-//        }
-
         try {
             // check if flight does not exist
             Statement statement = connection.createStatement();
@@ -158,6 +174,13 @@ public class Flight {
         return true;
     }
 
+    /**
+     * To issue a ticket to a client. Inserts a row to the reservedflights table.
+     * Returns true if available is greater than 0 and a row has been inserted 
+     * @param flight the flight of the reservation
+     * @param client the client to be reserved
+     * @return true if available is greater than 0 and a row has been inserted
+     */
     public boolean issueTicket(String flight, Client client) {
         try {
             Statement statement = connection.createStatement();
@@ -197,6 +220,16 @@ public class Flight {
         return true;
     }
 
+    /**
+     * To remove a row from the reservedflights table. Returns true if a row is removed when there is a row
+     * with a corresponding ticket number and passport number and that the row
+     * has been removed. Increment the available amount in the flights table
+     * @param ticket the ticket number of the reservation
+     * @param passNumber the passport number of the reservation
+     * @return Returns true if a row is removed when there is a row
+     * with a corresponding ticket number and passport number and that the row
+     * has been removed 
+     */
     public boolean cancelFlight(int ticket, int passNumber) {
         try {
             Statement statement = connection.createStatement();
@@ -259,7 +292,19 @@ public class Flight {
         return true;
     }
 
+    /**
+     * Returns a map of the flights table
+     * @return a map of the flights table
+     */
     public static Map<String, String> viewBoard() {
+        Locale locale = InputOutputUser.locale;
+        if (locale == null) {
+            locale = new Locale("en", "CA");
+        }
+        ResourceBundle res = InputOutputUser.res;
+        if (res == null) {
+            res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
+        }
         TreeMap<String, String> map = new TreeMap<>();
         Connection connection = SingleConnection.getInstance();
         try {
@@ -280,12 +325,16 @@ public class Flight {
         return map;
     }
 
+    /**
+     * Returns a map of the ReservedFlights table
+     * @return a map of the ReservedFlights table
+     */
     public static Map<String, String> viewBookedFlights() {
-        Locale locale = InputOutput.locale;
+        Locale locale = InputOutputUser.locale;
         if (locale == null) {
             locale = new Locale("en", "CA");
         }
-        ResourceBundle res = InputOutput.res;
+        ResourceBundle res = InputOutputUser.res;
         if (res == null) {
             res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
         }
@@ -298,7 +347,7 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put(res.getString("flightN") + " " + resultSet.getString("FlightN"),res.getString("ticketN")  + " " + resultSet.getString("TicketN")
+                map.put(res.getString("ticketN") + " " + resultSet.getString("ticketn"),res.getString("flightN")  + " " + resultSet.getString("flightn")
                         + ", " + res.getString("passNum") + " " + resultSet.getString("PassNum") + ", " + res.getString("flName") + " " + resultSet.getString("FLName")
                         + ", " + res.getString("issueDate") + " " + resultSet.getString("IssueDate") + ", " + res.getString("contact") + " " + resultSet.getString("Contact")
                         + ", " + res.getString("amount") + " " + resultSet.getString("Amount"));
@@ -310,38 +359,74 @@ public class Flight {
         return map;
     }
 
+    /**
+     * Getter for connection
+     * @return connection
+     */
     public Connection getConnection() {
         return connection;
     }
 
+    /**
+     * Getter for flight name
+     * @return flight name
+     */
     public String getFlightN() {
         return flightN;
     }
 
+    /**
+     * Get the name
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Getter for origin
+     * @return origin
+     */
     public String getOrigin() {
         return origin;
     }
 
+    /**
+     * Getter for destination
+     * @return destination
+     */
     public String getDestination() {
         return destination;
     }
 
+    /**
+     * Getter for duration
+     * @return duration
+     */
     public int getDuration() {
         return duration;
     }
 
+    /**
+     * Getter for seats
+     * @return seats
+     */
     public int getSeats() {
         return seats;
     }
 
+    /**
+     * Getter for  amount of seats
+     * @return amount of seats
+     */
     public int getAvailableSeats() {
         return availableSeats;
     }
 
+    /**
+     * Getter for available of seats
+     * @return available of seats
+     */
     public double getAmount() {
         return amount;
     }

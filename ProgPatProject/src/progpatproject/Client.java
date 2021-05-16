@@ -2,17 +2,8 @@ package progpatproject;
 
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
+import java.sql.*;
+import java.util.*;
 
 /**
  *
@@ -25,12 +16,24 @@ public class Client {
     private int passNumber;
     private String contact;
 
+    /**
+     * Constructor for client
+     * @param fullName the full name
+     * @param passNumber the passport number
+     * @param contact the contact 
+     */
     public Client(String fullName, int passNumber, String contact) {
         this.fullName = fullName;
         this.passNumber = passNumber;
         this.contact = contact;
     }
 
+    /**
+     * To book a seat. Adds a row in the ReservedFlights table if the the Flight
+     * exist in the Flights table and if the flights have more than 0 available seats
+     * @param flightNumber the flight number to be booked
+     * @return true if a row has been inserted according to the mentioned constraints
+     */
     public boolean bookASeat(String flightNumber) {
         try {
             String flNb = "'" + flightNumber + "'";
@@ -103,52 +106,69 @@ public class Client {
         }
     }
 
-    public boolean cancelReservation(int ticket) throws SQLException {
-        Statement stmt = connection.createStatement();
+    /**
+     * To cancel a reservation (or remove a row from the reservedFlights table).
+     * A row is removed if a row in the ReservedFlights table has a row with the ticket and corresponding
+     * passport number
+     * @param ticket the ticket number
+     * @return true if a row has been removed
+     */
+    public boolean cancelReservation(int ticket) {
+        try {
+            Statement stmt = connection.createStatement();
 
-        String getReservedFlight = String.format("SELECT COUNT(*) FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
-        ResultSet resultSet = stmt.executeQuery(getReservedFlight);
+            String getReservedFlight = String.format("SELECT COUNT(*) FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
+            ResultSet resultSet = stmt.executeQuery(getReservedFlight);
 
-        int count = -1;
-        while (resultSet.next()) {
-            count = resultSet.getInt(1);
+            int count = -1;
+            while (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            // if the ticket does not exist
+            if (count == 0) {
+                return false;
+            }
+
+            stmt = connection.createStatement();
+
+            getReservedFlight = String.format("SELECT FlightN FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
+            resultSet = stmt.executeQuery(getReservedFlight);
+
+            String flightNumber = null;
+
+            while (resultSet.next()) {
+                flightNumber = resultSet.getString("FlightN");
+            }
+            stmt = connection.createStatement();
+            String removeReservedFlight = String.format("DELETE FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
+            stmt.executeUpdate(removeReservedFlight);
+
+            stmt = connection.createStatement();
+            String getCurrentFlightAvail = String.format("SELECT Available FROM Flights WHERE FlightN = '%s';", flightNumber);
+            resultSet = stmt.executeQuery(getCurrentFlightAvail);
+            int currentAvail = 0;
+            while (resultSet.next()) {
+                currentAvail = resultSet.getInt("Available");
+            }
+            currentAvail++;
+
+            stmt = connection.createStatement();
+            String add1Availability = "UPDATE Flights SET Available = "
+                    + "" + currentAvail + " WHERE flightN = " + "'" + flightNumber + "';";
+            stmt.executeUpdate(add1Availability);
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
         }
-        // if the ticket does not exist
-        if (count == 0) {
-            return false;
-        }
-
-        stmt = connection.createStatement();
-
-        getReservedFlight = String.format("SELECT FlightN FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
-        resultSet = stmt.executeQuery(getReservedFlight);
-
-        String flightNumber = null;
-
-        while (resultSet.next()) {
-            flightNumber = resultSet.getString("FlightN");
-        }
-        stmt = connection.createStatement();
-        String removeReservedFlight = String.format("DELETE FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
-        stmt.executeUpdate(removeReservedFlight);
-
-        stmt = connection.createStatement();
-        String getCurrentFlightAvail = String.format("SELECT Available FROM Flights WHERE FlightN = '%s';", flightNumber);
-        resultSet = stmt.executeQuery(getCurrentFlightAvail);
-        int currentAvail = 0;
-        while (resultSet.next()) {
-            currentAvail = resultSet.getInt("Available");
-        }
-        currentAvail++;
-
-        stmt = connection.createStatement();
-        String add1Availability = "UPDATE Flights SET Available = "
-                + "" + currentAvail + " WHERE flightN = " + "'" + flightNumber + "';";
-        stmt.executeUpdate(add1Availability);
 
         return true;
     }
 
+    /**
+     * To get all flights in a list with a corresponding destination
+     * @param destination the destination to be searched
+     * @return a list containing all the flights with the destination
+     */
     public List<Flight> searchFlightByDestination(String destination) {
         try {
             Statement stmt = connection.createStatement();
@@ -177,12 +197,17 @@ public class Client {
         }
     }
 
-    public List<Flight> serarchFlightByDuration(int duration) {
+    /**
+     * To get all flights in a list with a corresponding duration
+     * @param duration the duration to be searched
+     * @return a list containing all the flights with the duration
+     */
+    public List<Flight> searchFlightByDuration(int duration) {
         try {
             Statement stmt = connection.createStatement();
             String getFlight = "SELECT * FROM Flights WHERE duration = " + duration + " ORDER BY flightN;";
             Flight flight = null;
-            List<Flight> list = null;
+            List<Flight> list = new ArrayList<>();
 
             ResultSet rs = stmt.executeQuery(getFlight);
             while (rs.next()) {
@@ -204,6 +229,11 @@ public class Client {
         }
     }
 
+    /**
+     * To get all flights in a list with a corresponding origin
+     * @param origin the origin to be searched
+     * @return a list containing all the flights with the origin
+     */
     public List<Flight> searchFlightByOrigin(String origin) {
         try {
             Statement stmt = connection.createStatement();
@@ -232,18 +262,22 @@ public class Client {
         }
     }
 
-    public Map<String, String> viewFlightBoard() throws SQLException {
+    /**
+     * Displays only flights with available seats.
+     * @return a map of flights with available seats
+     */
+    public Map<String, String> viewFlightBoard() {
         try {
-            Locale locale = InputOutput.locale;
+            Locale locale = InputOutputUser.locale;
             if (locale == null) {
                 locale = new Locale("en", "CA");
             }
-            ResourceBundle res = InputOutput.res;
+            ResourceBundle res = InputOutputUser.res;
             if (res == null) {
                 res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
             }
             Statement stmt = connection.createStatement();
-            String getFlight = "SELECT * FROM Flights ORDER BY flightN;";
+            String getFlight = "SELECT * FROM Flights WHERE Available > 0 ORDER BY flightN;";
             TreeMap<String, String> map = new TreeMap();
 
             ResultSet rs = stmt.executeQuery(getFlight);
@@ -269,14 +303,26 @@ public class Client {
 
     }
 
+    /**
+     * Get full name 
+     * @return full name
+     */
     public String getFullName() {
         return fullName;
     }
 
+    /**
+     * Get passport number
+     * @return passport number
+     */
     public int getPassNumber() {
         return passNumber;
     }
 
+    /**
+     * Get contact 
+     * @return contact
+     */
     public String getContact() {
         return contact;
     }

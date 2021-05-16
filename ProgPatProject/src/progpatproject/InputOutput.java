@@ -1,9 +1,6 @@
 package progpatproject;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -12,12 +9,9 @@ import java.util.*;
  */
 public class InputOutput {
 
-    private final Connection connection = SingleConnection.getInstance();
-
     // the type of the user
     // 1 for manager, 2 for client 
     private static int userType;
-    private static int languageChoice;
     private final static String country = "CA";
     protected static Locale locale;
     protected static ResourceBundle res;
@@ -26,62 +20,67 @@ public class InputOutput {
         promptUserLanguage();
         promptUserType();
         if (userType == 1) {
-            int choice = -1;
-
-            while (!new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7)).contains(choice)) {
-                printChosenLanguage("wrongInputMessage");
-                printManagerChoice();
-                try {
-                    Scanner scanner = new Scanner(System.in);
-                    if (scanner.hasNextInt()) {
-                        choice = scanner.nextInt();
-                    } else {
-                        System.out.println("Your input is wrong");
+            String continueChoice;
+            do {
+                int choice = -1;
+                while (!new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7)).contains(choice)) {
+                    printManagerChoice();
+                    try {
+                        Scanner scanner = new Scanner(System.in);
+                        if (scanner.hasNextInt()) {
+                            choice = scanner.nextInt();
+                        } else {
+                            printChosenLanguage("wrongInputMessage");
+                        }
+                    } catch (NumberFormatException exception) {
                     }
-                } catch (NumberFormatException exception) {
                 }
-            }
-            switch (choice) {
-                case 1:
-                    // Works
-                    Controller controller = new Controller(promptAddFlight(), null);
-                    controller.addFlight();
-                    break;
-                case 2:
-                    // Works
-                    controller = new Controller(getFlight(), null);
-                    controller.removeFlight(promptRemoveFlight());
-                    break;
-                case 3:
-                    // Works
-                    List<String> list = promptUpdateFlight();
-                    controller = new Controller(getFlight(), null);
-                    controller.updateFlightData(list.get(0), list.get(1), list.get(2));
-                    break;
-                case 4:
-                    // Works
-                    List<Object> issueTicketList = promptIssueTicket();
-                    controller = new Controller(getFlight(), null);
-                    Client client = controller.getClient((int) issueTicketList.get(1));
-                    controller.issueTicket((String) issueTicketList.get(0), client);
-                    break;
-                case 5:
-                    // Can only check once IssueTicket is done.
-                    List<Integer> cancelFlightList = promptCancelFlight();
-                    controller = new Controller(getFlight(), null);
-                    controller.cancelFlight(cancelFlightList.get(0), cancelFlightList.get(1));
-                    break;
-                case 6:
-                    // Works
-                    controller = new Controller(getFlight(), null);
-                    controller.viewBoard();
-                    break;
-                case 7:
-                    // Works
-                    controller = new Controller(getFlight(), null);
-                    controller.viewBookedFlights();
-                    break;
-            }
+                switch (choice) {
+                    case 1:
+                        // Works
+                        Controller controller = new Controller(promptAddFlight(), null);
+                        controller.addFlight();
+                        break;
+                    case 2:
+                        // Works
+                        controller = new Controller(getFlight(), null);
+                        controller.removeFlight(promptRemoveFlight());
+                        break;
+                    case 3:
+                        // Works
+                        List<String> list = promptUpdateFlight();
+                        controller = new Controller(getFlight(), null);
+                        controller.updateFlightData(list.get(0), list.get(1), list.get(2));
+                        break;
+                    case 4:
+                        // Works
+                        List<Object> issueTicketList = promptIssueTicket();
+                        controller = new Controller(getFlight(), null);
+                        Client client = getClient((int) issueTicketList.get(1));
+                        controller.issueTicket((String) issueTicketList.get(0), client);
+                        break;
+                    case 5:
+                        // Can only check once IssueTicket is done.
+                        List<Integer> cancelFlightList = promptCancelFlight();
+                        controller = new Controller(getFlight(), null);
+                        controller.cancelFlight(cancelFlightList.get(0), cancelFlightList.get(1));
+                        break;
+                    case 6:
+                        // Works
+                        controller = new Controller(getFlight(), null);
+//                        controller.updateViewBoard();
+                        break;
+                    case 7:
+                        // Works
+                        controller = new Controller(getFlight(), null);
+//                        controller.updateViewBookedFlights();
+                        break;
+                }
+                System.out.println("Do you want to continue?");
+                System.out.println("Type 1 for \"Yes\" and anything else for \"No\"");
+                Scanner scanner = new Scanner(System.in);
+                continueChoice = scanner.nextLine();
+            } while (continueChoice.equals("1"));
         } else if (userType == 2) {
             Client client = null;
             client = promptClientInfoInput();
@@ -89,60 +88,67 @@ public class InputOutput {
                 System.out.println("This client does not exist");
                 client = promptClientInfoInput();
             }
-            int choice = 0;
-            Controller controller = new Controller(getFlight(), client);
-            boolean correctInput = false;
-            while (!correctInput) {
-                printClientChoice();
-                Scanner input = new Scanner(System.in);
-                if (input.hasNextInt()) {
-                    choice += input.nextInt();
+            String continueChoice;
+            do {
+                int choice = 0;
+                Controller controller = new Controller(getFlight(), client);
+                boolean correctInput = false;
+                while (!correctInput) {
+                    printClientChoice();
+                    Scanner input = new Scanner(System.in);
+                    if (input.hasNextInt()) {
+                        choice += input.nextInt();
+                    }
+                    switch (choice) {
+                        case 1:
+                            // Works
+                            controller.bookASeat(promptBookASeat());
+                            correctInput = true;
+                            break;
+                        case 2:
+                            // Works.
+                            controller.cancelReservation(promptCancelReservation());
+                            correctInput = true;
+                            break;
+                        case 3:
+                            // Works.
+//                            controller.searchFlightByDestination(promptSearchFlightsByDestination());
+                            correctInput = true;
+                            break;
+                        case 4:
+                            //Works
+//                            controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
+                            correctInput = true;
+                            break;
+                        case 5:
+                            //Works
+                            controller.viewFlightBoard();
+                            correctInput = true;
+                            break;
+                        default:
+                            printChosenLanguage("switchDefault");
+                            System.out.println("Please select a valid option!");
+                            correctInput = false;
+                            break;
+                    }
                 }
-                switch (choice) {
-                    case 1:
-                        // Works
-                        controller.bookASeat(promptBookASeat());
-                        correctInput = true;
-                        break;
-                    case 2:
-                        // Works.
-                        controller.cancelReservation(promptCancelReservation());
-                        correctInput = true;
-                        break;
-                    case 3:
-                        // Works.
-                        controller.searchFlightByDestination(promptSearchFlightsByDestination());
-                        correctInput = true;
-                        break;
-                    case 4:
-                        //Works
-                        controller.searchFlightByOrigin(promptSearchFlightsByOrigin());
-                        correctInput = true;
-                        break;
-                    case 5:
-                        //Works
-                        controller.viewFlightBoard();
-                        correctInput = true;
-                        break;
-                    default:
-                        printChosenLanguage("switchDefault");
-                        System.out.println("Please select a valid option!");
-                        correctInput = false;
-                        break;
-                }
-            }
+                System.out.println("Do you want to continue?");
+                System.out.println("Type 1 for \"Yes\" and anything else for \"No\"");
+                Scanner scanner = new Scanner(System.in);
+                continueChoice = scanner.nextLine();
+            } while (continueChoice.equals("1"));
         }
     }
-    
-    public static void promptUserLanguage(){
-        try{
+
+    public static void promptUserLanguage() {
+        try {
             Scanner scanner = new Scanner(System.in);
             System.out.println("What language do you prefer?");
             System.out.println("Enter 1 for English");
             System.out.println("Enter 2 for French");
-            
+
             String line = scanner.nextLine();
-            
+
             while (!line.equals("1") && !line.equals("2")) {
                 System.out.println("Your input is wrong");
                 System.out.println("What language do you prefer?");
@@ -150,22 +156,19 @@ public class InputOutput {
                 System.out.println("Enter 2 for French");
                 line = scanner.nextLine();
             }
-            languageChoice = Integer.parseInt(line);
             if (line.equals("1")) {
                 locale = new Locale("en", country);
                 res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
-            }
-            else {
+            } else {
                 locale = new Locale("fr", country);
                 res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
             }
-        }
-        catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
     }
-    
-    public static void printChosenLanguage(String key){        
+
+    public static void printChosenLanguage(String key) {
         System.out.println(res.getString(key));
     }
 
@@ -214,85 +217,83 @@ public class InputOutput {
     }
 
     public static Flight promptAddFlight() {
-            String flightN, name, origin, dest;
-    //        flightN = name = origin = dest = "";
-            int duration, seats;
-            double amount;
-            
-            Scanner scanner= new Scanner(System.in);
+        String flightN, name, origin, dest;
+        //        flightN = name = origin = dest = "";
+        int duration, seats;
+        double amount;
 
+        Scanner scanner = new Scanner(System.in);
+
+        printChosenLanguage("flightNumberInput");
+        flightN = scanner.nextLine();
+        while (flightN.trim().isEmpty()) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightNumberInput");
             flightN = scanner.nextLine();
-            while (flightN.trim().isEmpty()) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("flightNumberInput");
-                flightN = scanner.nextLine();
-            }
+        }
 
+        printChosenLanguage("aircraftNameInput");
+        name = scanner.nextLine();
+        while (name.trim().isEmpty()) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("aircraftNameInput");
             name = scanner.nextLine();
-            while (name.trim().isEmpty()) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("aircraftNameInput");
-                name = scanner.nextLine();
-            }
+        }
 
+        printChosenLanguage("flightOriginInput");
+        origin = scanner.nextLine();
+        while (origin.trim().isEmpty()) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightOriginInput");
             origin = scanner.nextLine();
-            while (origin.trim().isEmpty()) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("flightOriginInput");
-                origin = scanner.nextLine();
-            }
+        }
 
+        printChosenLanguage("flightDestinationInput");
+        dest = scanner.nextLine();
+        while (dest.trim().isEmpty()) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightDestinationInput");
             dest = scanner.nextLine();
-            while (dest.trim().isEmpty()) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("flightDestinationInput");
-                dest = scanner.nextLine();
-            }
+        }
 
+        printChosenLanguage("flightDurationInput");
+        String input = scanner.nextLine();
+        while (!isInteger(input)) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightDurationInput");
-            String input = scanner.nextLine();
-            while (!isInteger(input)) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("flightDurationInput");
-                input = scanner.nextLine();
-            }
-            duration = Integer.parseInt(input);
+            input = scanner.nextLine();
+        }
+        duration = Integer.parseInt(input);
 
+        printChosenLanguage("flightSeatsInput");
+        input = scanner.nextLine();
+        while (!isInteger(input)) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightSeatsInput");
             input = scanner.nextLine();
-            while (!isInteger(input)) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("flightSeatsInput");
-                input = scanner.nextLine();
-            }
-            seats = Integer.parseInt(input);
-            // no prompt for the available amount of seats since
-            // the flight has just been addec
+        }
+        seats = Integer.parseInt(input);
+        // no prompt for the available amount of seats since
+        // the flight has just been addec
 
+        printChosenLanguage("flightPriceInput");
+        input = scanner.nextLine();
+        while (!isDouble(input)) {
+            printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightPriceInput");
             input = scanner.nextLine();
-            while (!isDouble(input)) {
-                printChosenLanguage("wrongInputMessage");
-                printChosenLanguage("flightPriceInput");
-                input = scanner.nextLine();
-            }
-            amount = Double.parseDouble(input);
+        }
+        amount = Double.parseDouble(input);
 
         return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
     }
 
     public static String promptRemoveFlight() {
-        String flightNumber = "";
-        
         printChosenLanguage("flightNumberInput");
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Please enter the flight number: ");
-        flightNumber = scanner.nextLine();
+        String flightNumber = scanner.nextLine();
         while (flightNumber.trim().isEmpty()) {
             printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightNumberInput");
@@ -303,15 +304,13 @@ public class InputOutput {
     }
 
     public static List<String> promptUpdateFlight() {
-        String flightNumber = "";
-        String field = "";
-        String newValue = "";
-        List<String> list = new ArrayList<String>();
+        String newValue;
+        List<String> list = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
 
         printChosenLanguage("flightNumberInput");
-        flightNumber = scanner.nextLine();
+        String flightNumber = scanner.nextLine();
 
         while (flightNumber.trim().isEmpty()) {
             printChosenLanguage("wrongInputMessage");
@@ -321,7 +320,7 @@ public class InputOutput {
         list.add(flightNumber);
 
         printChosenLanguage("fieldToChangeInput");
-        field = scanner.nextLine();
+        String field = scanner.nextLine();
 
         while (!new ArrayList<>(Arrays.asList("origin", "dest", "duration")).contains(field.toLowerCase())) {
             printChosenLanguage("wrongInputMessage");
@@ -358,20 +357,21 @@ public class InputOutput {
 
     public static List<Object> promptIssueTicket() {
         List<Object> list = new ArrayList<>(1);
-        String flightNumber = "";
-
         Scanner scanner = new Scanner(System.in);
 
         printChosenLanguage("flightNumberInput");
-        flightNumber = scanner.nextLine();
+        String flightNumber = scanner.nextLine();
 
         while (flightNumber.trim().isEmpty()) {
             printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightNumberInput");
             flightNumber = scanner.nextLine();
         }
+        if (!isFlightExists(flightNumber)) {
+            System.out.println("The flight does not exist. Let's restart the process");
+            return promptIssueTicket();
+        }
         list.add(flightNumber);
-        // PASSPORT NUMBER CAN BE 0 NO?
         printChosenLanguage("passportNumberInput");
         String input = scanner.nextLine();
 
@@ -380,11 +380,10 @@ public class InputOutput {
             printChosenLanguage("passportNumberInput");
             input = scanner.nextLine();
         }
-        if (checkClient(Integer.parseInt(input)) == null) {
+        if (getClient(Integer.parseInt(input)) == null) {
             System.out.println("The client does not exist. Let's restart the process");
             return promptIssueTicket();
         }
-
         list.add(Integer.parseInt(input));
 
         return list;
@@ -418,7 +417,6 @@ public class InputOutput {
 
     }
 
-
     public static Client promptClientInfoInput() {
         Scanner scanner = new Scanner(System.in);
         printChosenLanguage("passportNumberInput");
@@ -430,10 +428,10 @@ public class InputOutput {
             input = scanner.nextLine();
         }
 
-        return checkClient(Integer.parseInt(input));
+        return getClient(Integer.parseInt(input));
     }
 
-    public static Client checkClient(int passNumber) {
+    public static Client getClient(int passNumber) {
         Client client = null;
         try {
             Connection connection = SingleConnection.getInstance();
@@ -454,6 +452,24 @@ public class InputOutput {
         return client;
     }
 
+    public static boolean isFlightExists(String flightN) {
+        int count = -1;
+        try {
+            Connection connection = SingleConnection.getInstance();
+            Statement stmt = connection.createStatement();
+
+            String getClient = String.format("SELECT COUNT(*) FROM Flights WHERE FlightN = '%s'", flightN);
+            ResultSet rs = stmt.executeQuery(getClient);
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        return count > 0;
+    }
+
     public static void printClientChoice() {
         printChosenLanguage("clientChoice1");
         printChosenLanguage("clientChoice2");
@@ -463,13 +479,10 @@ public class InputOutput {
     }
 
     public static String promptBookASeat() {
-        String flightN = "";
-        Scanner input = new Scanner(System.in);
-
         Scanner scanner = new Scanner(System.in);
 
         printChosenLanguage("flightNumberInput");
-        flightN = scanner.nextLine();
+        String flightN = scanner.nextLine();
         while (flightN.trim().isEmpty()) {
             printChosenLanguage("wrongInputMessage");
             printChosenLanguage("flightNumberInput");
@@ -511,11 +524,10 @@ public class InputOutput {
     }
 
     public static String promptSearchFlightsByOrigin() {
-        String origin = "";
         Scanner scanner = new Scanner(System.in);
 
         printChosenLanguage("promptSearchFlightByOrigin");
-        origin = scanner.nextLine();
+        String origin = scanner.nextLine();
         while (origin.trim().isEmpty()) {
             printChosenLanguage("wrongInputMessage");
             printChosenLanguage("promptSearchFlightByOrigin");
