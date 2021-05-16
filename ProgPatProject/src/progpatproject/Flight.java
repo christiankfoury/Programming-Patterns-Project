@@ -206,12 +206,29 @@ public class Flight {
                     + "WHERE FlightN = '%s';", available - 1, flight);
             statement.executeUpdate(updateTable);
 
+            // From line 77-89, we are extracting all the ticket numbers in the ReservedFlight Table and
+            // inserting them in a list which then we are incrementing by one if the list is not empty
+            // in order to increment ticket numbers when inserting new records in the ReservedFlights
+            // table. We chose to do it this way because we did not like SQLite's method of incrementing
+            // because their method is unpractical because it skips numbers when previous rows are deleted.
             statement = connection.createStatement();
-            //                                                                                                                                  AUTO-INCREMENT
+            String getAllTicketNumbers = "SELECT * FROM ReservedFlights ORDER BY TicketN;";
+            List<Integer> list = new ArrayList<>();
+            resultSet = statement.executeQuery(getAllTicketNumbers);
+            while (resultSet.next()) {
+                list.add(resultSet.getInt("TicketN"));
+            }
+
+            int ticketN = 1;
+
+            if (!list.isEmpty()) {
+                ticketN = list.get(list.size() - 1) + 1;
+            }
+            
             java.util.Date date = new java.util.Date();
 
-            String insertTable = String.format("INSERT INTO ReservedFlights (FlightN, PassNum, FlName, IssueDate, Contact, Amount) "
-                    + "VALUES ('%s', '%s', '%s', '%s', '%s', '%f');", flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
+            String insertTable = String.format("INSERT INTO ReservedFlights (TicketN,FlightN, PassNum, FlName, IssueDate, Contact, Amount) "
+                    + "VALUES ('%d','%s', '%s', '%s', '%s', '%s', '%f');",ticketN, flight, client.getPassNumber(), client.getFullName(), date, client.getContact(), amountToPay);
             statement.executeUpdate(insertTable);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

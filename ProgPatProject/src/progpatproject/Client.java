@@ -73,6 +73,11 @@ public class Client {
                     String remove1FromAvailSeats = "UPDATE Flights SET Available = " + availSeats + " WHERE flightN = " + flNb + ";";
                     stmt.executeUpdate(remove1FromAvailSeats);
 
+                    // From line 77-89, we are extracting all the ticket numbers in the ReservedFlight Table and
+                    // inserting them in a list which then we are incrementing by one if the list is not empty
+                    // in order to increment ticket numbers when inserting new records in the ReservedFlights
+                    // table. We chose to do it this way because we did not like SQLite's method of incrementing
+                    // because their method is unpractical because it skips numbers when previous rows are deleted.
                     stmt = connection.createStatement();
                     String getAllTicketNumbers = "SELECT * FROM ReservedFlights ORDER BY TicketN;";
                     List<Integer> list = new ArrayList<>();
@@ -84,15 +89,14 @@ public class Client {
                     int ticketN = 1;
 
                     if (!list.isEmpty()) {
-                        ticketN = list.get(list.get(list.size() - 1)) + 1;
+                        ticketN = list.get(list.size() - 1) + 1;
                     }
 
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-mm-dd");
-                    LocalDateTime now = LocalDateTime.now();
+                    java.util.Date date = new java.util.Date();
 
                     String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%d','%s',%d,'%s',"
                             + "'%s','%s',%f);", ticketN, flightNumber, getPassNumber(), getFullName(),
-                            "" + dtf.format(now), getContact(), flight.getAmount());
+                            "" + date, getContact(), flight.getAmount());
                     stmt.executeUpdate(addEntry);
                     return true;
                 }

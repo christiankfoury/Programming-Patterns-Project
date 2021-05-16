@@ -54,6 +54,7 @@ public class ControllerIT {
         int count = countData(String.format("SELECT COUNT(*) FROM Flights WHERE FlightN = 'F100'"));
         assertEquals(1, count);
         assertEquals(instance.getBoard().containsKey(res.getString("flightN") + " F100"), true);
+        System.out.println("");
     }
 
     /**
@@ -62,11 +63,13 @@ public class ControllerIT {
     @Test
     public void testRemoveFlight() {
         System.out.println("removeFlight");
-        String flightNumber = "";
-        Controller instance = null;
-        instance.removeFlight(flightNumber);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.removeFlight("F100");
+        int count = countData(String.format("SELECT COUNT(*) FROM Flights WHERE FlightN = 'F100'"));
+        assertEquals(0,count);
+        assertEquals(instance.getBoard().containsKey(res.getString("flightN") + "F100"), false );
+        System.out.println("");
     }
 
     /**
@@ -74,14 +77,16 @@ public class ControllerIT {
      */
     @Test
     public void testUpdateFlightData() {
-        System.out.println("updateFlightData");
-        String flightNumber = "";
-        String field = "";
-        String newValue = "";
-        Controller instance = null;
-        instance.updateFlightData(flightNumber, field, newValue);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        // Need to fix.
+        System.out.println("removeFlight");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.addFlight();
+        instance.updateFlightData("F100","Dest","Jamaica");
+        int count = countData(String.format("SELECT COUNT(*) FROM Flights WHERE FlightN = 'F100' and Dest = 'California';"));
+        assertEquals(0, count);
+        System.out.println("");
     }
 
     /**
@@ -89,13 +94,13 @@ public class ControllerIT {
      */
     @Test
     public void testIssueTicket() {
-        System.out.println("issueTicket");
-        String flight = "";
-        Client client = null;
-        Controller instance = null;
-        instance.issueTicket(flight, client);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("removeFlight");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.issueTicket("F100", new Client("Christian Kfoury", 2234, "2223334444"));
+        int count = countData(String.format("SELECT COUNT(*) FROM ReservedFlights WHERE FlightN = 'F100' and PassNum = 2234;"));
+        assertEquals(1, count);
+        System.out.println("");
     }
 
     /**
@@ -104,12 +109,12 @@ public class ControllerIT {
     @Test
     public void testCancelFlight() {
         System.out.println("cancelFlight");
-        int ticket = 0;
-        int passNumber = 0;
-        Controller instance = null;
-        instance.cancelFlight(ticket, passNumber);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.cancelFlight(15,2234);
+        int count = countData(String.format("SELECT COUNT(*) FROM ReservedFlights WHERE FlightN = 'F100' and PassNum = 2234;"));
+        assertEquals(0, count);
+        System.out.println("");
     }
 
     /**
@@ -117,13 +122,14 @@ public class ControllerIT {
      */
     @Test
     public void testGetBoard() {
-        System.out.println("getBoard");
-        Controller instance = null;
-        Map<String, String> expResult = null;
-        Map<String, String> result = instance.getBoard();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("cancelFlight");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        Map<String,String> map = instance.getBoard();
+        int boardSize = map.size();
+        int count = countData(String.format("SELECT COUNT(*) FROM Flights;"));
+        assertEquals(count, boardSize);
+        System.out.println("");
     }
 
     /**
@@ -132,12 +138,13 @@ public class ControllerIT {
     @Test
     public void testGetBookedFlights() {
         System.out.println("getBookedFlights");
-        Controller instance = null;
-        Map<String, String> expResult = null;
-        Map<String, String> result = instance.getBookedFlights();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        Map<String,String> map = instance.getBookedFlights();
+        int bookedFlightsSize = map.size();
+        int count = countData(String.format("SELECT COUNT(*) FROM ReservedFlights;"));
+        assertEquals(count, bookedFlightsSize);
+        System.out.println("");
     }
 
     /**
@@ -146,11 +153,9 @@ public class ControllerIT {
     @Test
     public void testUpdateViewFlight() {
         System.out.println("updateViewFlight");
-        Map<String, String> board = null;
-        Controller instance = null;
-        instance.updateViewFlight(board);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.updateViewFlight(instance.getBoard());
     }
 
     /**
@@ -158,12 +163,12 @@ public class ControllerIT {
      */
     @Test
     public void testBookASeat() throws Exception {
-        System.out.println("bookASeat");
-        String flightNumber = "";
-        Controller instance = null;
-        instance.bookASeat(flightNumber);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("getBookedFlights");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.bookASeat("AC145");
+        int count = countData("SELECT COUNT(*) FROM ReservedFlights WHERE FlightN = 'AC145' and PassNum = 2234;");
+        assertEquals(1, count);
     }
 
     /**
@@ -172,11 +177,11 @@ public class ControllerIT {
     @Test
     public void testCancelReservation() throws Exception {
         System.out.println("cancelReservation");
-        int ticket = 0;
-        Controller instance = null;
-        instance.cancelReservation(ticket);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.cancelReservation(15);
+        int count = countData("SELECT COUNT(*) FROM ReservedFlights WHERE FlightN = 'AC145' and PassNum = 2234;");
+        assertEquals(0, count);
     }
 
     /**
@@ -185,13 +190,11 @@ public class ControllerIT {
     @Test
     public void testGetSearchFlightByDestination() {
         System.out.println("getSearchFlightByDestination");
-        String destination = "";
-        Controller instance = null;
-        List<Flight> expResult = null;
-        List<Flight> result = instance.getSearchFlightByDestination(destination);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        List<Flight> list = instance.getSearchFlightByDestination("Alaska");
+        int count = countData("Select Count(*) FROM Flights WHERE Dest = 'Alaska';");
+        assertEquals(count, list.size());
     }
 
     /**
@@ -200,13 +203,11 @@ public class ControllerIT {
     @Test
     public void testGetSearchFlightByDuration() {
         System.out.println("getSearchFlightByDuration");
-        int duration = 0;
-        Controller instance = null;
-        List<Flight> expResult = null;
-        List<Flight> result = instance.getSearchFlightByDuration(duration);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        List<Flight> list = instance.getSearchFlightByDuration(100);
+        int count = countData("Select Count(*) FROM Flights WHERE Duration = 100;");
+        assertEquals(count, list.size());
     }
 
     /**
@@ -215,13 +216,11 @@ public class ControllerIT {
     @Test
     public void testGetSearchFlightByOrigin() {
         System.out.println("getSearchFlightByOrigin");
-        String origin = "";
-        Controller instance = null;
-        List<Flight> expResult = null;
-        List<Flight> result = instance.getSearchFlightByOrigin(origin);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        List<Flight> list = instance.getSearchFlightByOrigin("Canada");
+        int count = countData("Select Count(*) FROM Flights WHERE Origin = 'Canada';");
+        assertEquals(count, list.size());
     }
 
     /**
@@ -230,11 +229,9 @@ public class ControllerIT {
     @Test
     public void testUpdateViewClient() {
         System.out.println("updateViewClient");
-        List<Flight> flights = null;
-        Controller instance = null;
-        instance.updateViewClient(flights);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
+        instance.updateViewClient(instance.getSearchFlightByDestination("Alaska"));
     }
 
     /**
@@ -243,38 +240,9 @@ public class ControllerIT {
     @Test
     public void testViewFlightBoard() throws Exception {
         System.out.println("viewFlightBoard");
-        Controller instance = null;
+        Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
+        ResourceBundle res = instance.getRessourceBundle();
         instance.viewFlightBoard();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getLocale method, of class Controller.
-     */
-    @Test
-    public void testGetLocale() {
-        System.out.println("getLocale");
-        Controller instance = null;
-        Locale expResult = null;
-        Locale result = instance.getLocale();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getRessourceBundle method, of class Controller.
-     */
-    @Test
-    public void testGetRessourceBundle() {
-        System.out.println("getRessourceBundle");
-        Controller instance = null;
-        ResourceBundle expResult = null;
-        ResourceBundle result = instance.getRessourceBundle();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
     public static int countData(String queryTable) {
@@ -293,6 +261,5 @@ public class ControllerIT {
             System.exit(0);
         }
         return count;
-    }
-    
+    } 
 }
