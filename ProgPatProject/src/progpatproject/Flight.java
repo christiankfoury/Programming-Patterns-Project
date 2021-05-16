@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
+import static progpatproject.InputOutput.res;
 
 /**
  *
@@ -278,6 +281,15 @@ public class Flight {
     }
 
     public static Map<String, String> viewBookedFlights() {
+        Locale locale = InputOutput.locale;
+        if (locale == null) {
+            locale = new Locale("en", "CA");
+        }
+        ResourceBundle res = InputOutput.res;
+        if (res == null) {
+            res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
+        }
+                
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         Connection connection = SingleConnection.getInstance();
         try {
@@ -286,10 +298,6 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put("TicketN" + resultSet.getString("TicketN"), " FlightN" + resultSet.getString("FlightN")
-                        + ", PassNum" + resultSet.getString("PassNum") + ", FLName" + resultSet.getString("FLName")
-                        + ", IssueDate" + resultSet.getString("IssueDate") + ", Contact" + resultSet.getString("Contact")
-                        + ", Amount" + resultSet.getString("Amount"));
                 map.put("FlightN: " + resultSet.getString("FlightN"), " TicketN: " + resultSet.getString("TicketN")
                         + ", PassNum: " + resultSet.getString("PassNum") + ", FLName: " + resultSet.getString("FLName")
                         + ", IssueDate: " + resultSet.getString("IssueDate") + ", Contact: " + resultSet.getString("Contact")

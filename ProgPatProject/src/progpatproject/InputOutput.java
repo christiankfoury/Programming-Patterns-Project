@@ -19,6 +19,8 @@ public class InputOutput {
     private static int userType;
     private static int languageChoice;
     private final static String country = "CA";
+    protected static Locale locale;
+    protected static ResourceBundle res;
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         promptUserLanguage();
@@ -149,22 +151,21 @@ public class InputOutput {
                 line = scanner.nextLine();
             }
             languageChoice = Integer.parseInt(line);
+            if (line.equals("1")) {
+                locale = new Locale("en", country);
+                res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
+            }
+            else {
+                locale = new Locale("fr", country);
+                res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
+            }
         }
         catch(Exception e){
             
         }
     }
     
-    public static void printChosenLanguage(String key){
-        String language = "";
-        if(languageChoice == 1){
-            language += "en";
-        }
-        else language += "fr";
-        
-        Locale locale = new Locale(language,country);
-        ResourceBundle res = ResourceBundle.getBundle("progpatproject/OutputBundle",locale);
-        
+    public static void printChosenLanguage(String key){        
         System.out.println(res.getString(key));
     }
 
