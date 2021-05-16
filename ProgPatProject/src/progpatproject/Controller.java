@@ -29,46 +29,46 @@ public class Controller {
 
     public void addFlight(){
         if(model.addFlight(model)){
-            System.out.println("Flight has been successfully added!");
+            InputOutput.printChosenLanguage("successfullyAddedFlight");
         }
         else{
-            System.err.println("Flight already exists.");
+            InputOutput.printChosenLanguage("flightAlreadyExists");
         }
     }
     
     public void removeFlight(String flightNumber){
         if(model.removeFlight(flightNumber)){
-            System.out.println("Flight has been successfully removed!");
+            InputOutput.printChosenLanguage("successfullyRemovedFlight");
         }
         else{
-            System.err.println("Flight does not exist.");
+            InputOutput.printChosenLanguage("flightDoesNotExist");
         }
     }
     
     public void updateFlightData(String flightNumber, String field, String newValue){
         if(model.updateFlightData(flightNumber, field, newValue)){
-            System.out.println("Flight information has been updated.");
+            InputOutput.printChosenLanguage("flightInformationUpdated");
         }
         else{
-            System.err.println("Flight does not exist.");
+            InputOutput.printChosenLanguage("flightDoesNotExist");
         }
     }
     
     public void issueTicket(String flight, Client client){
         if(model.issueTicket(flight, client)){
-            System.out.println("A ticket has been issued to the client.");
+            InputOutput.printChosenLanguage("ticketIssued");
         }
         else{
-            System.err.println("No more seats available");
+            InputOutput.printChosenLanguage("noMoreSeats");
         }
     }
     
     public void cancelFlight(int ticket, int passNumber){
         if(model.cancelFlight(ticket, passNumber)){
-            System.out.println("The flight has been successfully canceled.");
+            InputOutput.printChosenLanguage("flightCanceled");
         }
         else{
-            System.err.println("");
+            InputOutput.printChosenLanguage("flightCanceledError");
         }
     }
     
@@ -86,19 +86,19 @@ public class Controller {
     
     public void bookASeat(String flightNumber) throws ClassNotFoundException, SQLException{
         if(client.bookASeat(flightNumber)){
-            System.out.println("A Seat has been booked!");
+            InputOutput.printChosenLanguage("seatHasBeenBooked");
         }
         else{
-            System.err.println("");
+            InputOutput.printChosenLanguage("seatHasBeenBookedError");
         }
     }
     
     public void cancelReservation(int ticket) throws SQLException{
         if(client.cancelReservation(ticket)){
-            System.out.println("A Reservation has been cancelled.");
+            InputOutput.printChosenLanguage("reservationCancelled");
         }
         else{
-            System.err.println("");
+            InputOutput.printChosenLanguage("reservationCancelledError");
         }
     }
     
