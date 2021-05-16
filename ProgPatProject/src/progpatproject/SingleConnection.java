@@ -22,7 +22,6 @@ public class SingleConnection {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection(databaseUrl);
-            System.out.println("Opened database successfully");
 
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

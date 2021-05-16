@@ -33,6 +33,8 @@ public class InputOutput {
                     Scanner scanner = new Scanner(System.in);
                     if (scanner.hasNextInt()) {
                         choice = scanner.nextInt();
+                    } else {
+                        System.out.println("Your input is wrong");
                     }
                 } catch (NumberFormatException exception) {
                 }
@@ -80,7 +82,9 @@ public class InputOutput {
             }
         } else if (userType == 2) {
             Client client = null;
+            client = promptClientInfoInput();
             while (client == null) {
+                System.out.println("This client does not exist");
                 client = promptClientInfoInput();
             }
             int choice = 0;
@@ -120,6 +124,7 @@ public class InputOutput {
                         break;
                     default:
                         printChosenLanguage("switchDefault");
+                        System.out.println("Please select a valid option!");
                         correctInput = false;
                         break;
                 }
@@ -208,12 +213,12 @@ public class InputOutput {
     }
 
     public static Flight promptAddFlight() {
-        String flightN, name, origin, dest;
-        flightN = name = origin = dest = "";
-        int duration = 0, seats = 0;
-        double amount = 0;
-        try {
-            Scanner scanner = new Scanner(System.in);
+            String flightN, name, origin, dest;
+    //        flightN = name = origin = dest = "";
+            int duration, seats;
+            double amount;
+            
+            Scanner scanner= new Scanner(System.in);
 
             printChosenLanguage("flightNumberInput");
             flightN = scanner.nextLine();
@@ -276,9 +281,6 @@ public class InputOutput {
             }
             amount = Double.parseDouble(input);
 
-        } catch (NumberFormatException exception) {
-        }
-
         return new Flight(flightN, name, origin, dest, duration, seats, seats, amount);
     }
 
@@ -288,6 +290,7 @@ public class InputOutput {
         printChosenLanguage("flightNumberInput");
         Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Please enter the flight number: ");
         flightNumber = scanner.nextLine();
         while (flightNumber.trim().isEmpty()) {
             printChosenLanguage("wrongInputMessage");
@@ -376,6 +379,11 @@ public class InputOutput {
             printChosenLanguage("passportNumberInput");
             input = scanner.nextLine();
         }
+        if (checkClient(Integer.parseInt(input)) == null) {
+            System.out.println("The client does not exist. Let's restart the process");
+            return promptIssueTicket();
+        }
+
         list.add(Integer.parseInt(input));
 
         return list;
@@ -425,27 +433,24 @@ public class InputOutput {
     }
 
     public static Client checkClient(int passNumber) {
-
+        Client client = null;
         try {
             Connection connection = SingleConnection.getInstance();
             Statement stmt = connection.createStatement();
 
             String getClient = String.format("SELECT * FROM Clients WHERE PassNum = %d", passNumber);
             ResultSet rs = stmt.executeQuery(getClient);
-            Client client = null;
             while (rs.next()) {
                 String fullName = rs.getString("FlName");
                 String contact = rs.getString("Contact");
                 client = new Client(fullName, passNumber, contact);
             }
-            if (client == null) {
-                throw new SQLException();
-            }
-            return client;
+
         } catch (Exception e) {
-            System.err.println("Error: " + e + ", Client does not exist.");
-            return null;
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
         }
+        return client;
     }
 
     public static void printClientChoice() {
@@ -515,7 +520,7 @@ public class InputOutput {
             printChosenLanguage("promptSearchFlightByOrigin");
             origin = scanner.nextLine();
         }
-        
+
         return origin;
     }
 
