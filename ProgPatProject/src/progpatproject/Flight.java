@@ -268,10 +268,10 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put("FlightN: " + resultSet.getString("FlightN"), " Name: " + resultSet.getString("Name")
-                        + ", Origin: " + resultSet.getString("Origin") + ", Dest: " + resultSet.getString("Dest")
-                        + ", Duration: " + resultSet.getString("Duration") + ", Seats: " + resultSet.getString("Seats")
-                        + ", Available: " + resultSet.getString("Available") + ", Amount: " + resultSet.getString("Amount"));
+                map.put(res.getString("flightN") + " " + resultSet.getString("FlightN"), " " + res.getString("name") + " " + resultSet.getString("Name")
+                        + ", " + res.getString("origin") + " " + resultSet.getString("Origin") + ", " + res.getString("dest") + " " + resultSet.getString("Dest")
+                        + ", " + res.getString("duration") + " " + resultSet.getString("Duration") + ", " + res.getString("seats") + " " + resultSet.getString("Seats")
+                        + ", " + res.getString("available") + " " + resultSet.getString("Available") + ", " + res.getString("amount") + " " + resultSet.getString("Amount"));
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -298,10 +298,10 @@ public class Flight {
             ResultSet resultSet = statement.executeQuery(queryTable);
 
             while (resultSet.next()) {
-                map.put("FlightN: " + resultSet.getString("FlightN"), " TicketN: " + resultSet.getString("TicketN")
-                        + ", PassNum: " + resultSet.getString("PassNum") + ", FLName: " + resultSet.getString("FLName")
-                        + ", IssueDate: " + resultSet.getString("IssueDate") + ", Contact: " + resultSet.getString("Contact")
-                        + ", Amount: " + resultSet.getString("Amount"));
+                map.put(res.getString("flightN") + " " + resultSet.getString("FlightN"),res.getString("ticketN")  + " " + resultSet.getString("TicketN")
+                        + ", " + res.getString("passNum") + " " + resultSet.getString("PassNum") + ", " + res.getString("flName") + " " + resultSet.getString("FLName")
+                        + ", " + res.getString("issueDate") + " " + resultSet.getString("IssueDate") + ", " + res.getString("contact") + " " + resultSet.getString("Contact")
+                        + ", " + res.getString("amount") + " " + resultSet.getString("Amount"));
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

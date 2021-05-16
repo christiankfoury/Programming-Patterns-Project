@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 /**
@@ -232,6 +234,14 @@ public class Client {
 
     public Map<String, String> viewFlightBoard() throws SQLException {
         try {
+            Locale locale = InputOutput.locale;
+            if (locale == null) {
+                locale = new Locale("en", "CA");
+            }
+            ResourceBundle res = InputOutput.res;
+            if (res == null) {
+                res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
+            }
             Statement stmt = connection.createStatement();
             String getFlight = "SELECT * FROM Flights ORDER BY flightN;";
             TreeMap<String, String> map = new TreeMap();
@@ -247,8 +257,8 @@ public class Client {
                 int availSeats = rs.getInt("Available");
                 double price = rs.getDouble("Amount");
 
-                map.put("Flight Number: " + number, String.format("{Aircraft Name: %s, Origin: %s, Destination: %s,"
-                        + " Duration: %d, Total Seats: %d, Available Seats: %d, Price: %f}",
+                map.put(res.getString("flightN") + " " + number, String.format("{" + res.getString("name") + "  %s, " + res.getString("origin") + " %s, " + res.getString("dest") + " %s,"
+                        + " " + res.getString("duration") + " %d, " + res.getString("seats") + " %d, " + res.getString("available") + " %d, " + res.getString("amount") + " %f}",
                         name, origin, destination, duration, totalSeats, availSeats, price));
             }
             return map;
