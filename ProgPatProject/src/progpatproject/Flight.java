@@ -15,7 +15,7 @@ import java.util.TreeMap;
 public class Flight {
 
     private Connection connection = SingleConnection.getInstance();
-    private String flightN;                 
+    private String flightN;
     private String name;
     private String origin;
     private String destination;
@@ -214,10 +214,10 @@ public class Flight {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        
+
         try {
             Statement statement = connection.createStatement();
-            // check if ticket already exists
+            // getting flight number to later increment the available
             String queryTable = String.format("SELECT FlightN FROM ReservedFlights WHERE "
                     + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
             ResultSet resultSet = statement.executeQuery(queryTable);
@@ -226,26 +226,29 @@ public class Flight {
             while (resultSet.next()) {
                 flight = resultSet.getString("FlightN");
             }
-            
+
+            // getting the available from the flight number
             int available = -1;
             statement = connection.createStatement();
             queryTable = String.format("SELECT Available FROM Flights WHERE "
                     + "FlightN = '%s';", flight);
             resultSet = statement.executeQuery(queryTable);
-            
+
             while (resultSet.next()) {
                 available = resultSet.getInt("Available");
             }
-            
+
+            // deleting the reserved flight
             statement = connection.createStatement();
             String updateInTable = String.format("DELETE FROM ReservedFlights WHERE "
                     + "TicketN = %d AND PassNum = %d;", ticket, passNumber);
             statement.executeUpdate(updateInTable);
-            
+
+            // incrementing the available
             statement = connection.createStatement();
-            updateInTable = String.format("UPDATE Flights SET Available = %d WHERE FlightN = '%s'", available, flight);
+            updateInTable = String.format("UPDATE Flights SET Available = %d WHERE FlightN = '%s'", available + 1, flight);
             statement.executeUpdate(updateInTable);
-            
+
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);

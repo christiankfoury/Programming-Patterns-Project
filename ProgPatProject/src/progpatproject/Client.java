@@ -94,43 +94,49 @@ public class Client {
     }
     
     public boolean cancelReservation(int ticket) throws SQLException {
-        
-        if (ticket <= 0){
-            return false;
-        }
-        
         Statement stmt = connection.createStatement();
         
-        String getReservedFlight = "SELECT * FROM ReservedFlights WHERE ticketN = " + ticket + ";";
-        ResultSet rs = stmt.executeQuery(getReservedFlight);
-        String flightNumber = null;
-        if(rs == null){
+        String getReservedFlight = String.format("SELECT COUNT(*) FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
+        ResultSet resultSet = stmt.executeQuery(getReservedFlight);
+        
+        int count = -1;
+        while (resultSet.next()) {
+            count = resultSet.getInt(1);
+        }
+        // if the ticket does not exist
+        if (count == 0) {
             return false;
         }
-        else{
-            while (rs.next()){
-                flightNumber = rs.getString("flightN");
-            }
-            stmt = connection.createStatement();
-            String removeReservedFlight = "DELETE FROM ReservedFlights WHERE ticketN = " + ticket + ";";
-            stmt.executeUpdate(removeReservedFlight);
-            
-            stmt = connection.createStatement();
-            String getCurrentFlightAvail = "SELECT * FROM Flights WHERE flightN = " + "'" + flightNumber + "'" + ";";
-            rs = stmt.executeQuery(getCurrentFlightAvail);
-            int currentAvail = 0;
-            while(rs.next()){
-                currentAvail = rs.getInt("Available");
-            }
-            currentAvail++;
-            
-            stmt = connection.createStatement();
-            String add1Availability = "UPDATE Flights SET Available = "
-                    + "" + currentAvail + " WHERE flightN = " + "'" + flightNumber + "';";
-            stmt.executeUpdate(add1Availability);
-           
-            return true; 
+        
+        stmt = connection.createStatement();
+
+        getReservedFlight = String.format("SELECT FlightN FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
+        resultSet = stmt.executeQuery(getReservedFlight);
+        
+        String flightNumber = null;
+        
+        while (resultSet.next()){
+            flightNumber = resultSet.getString("FlightN");
         }
+        stmt = connection.createStatement();
+        String removeReservedFlight = String.format("DELETE FROM ReservedFlights WHERE ticketN = %d AND PassNum = %d;", ticket, passNumber);
+        stmt.executeUpdate(removeReservedFlight);
+
+        stmt = connection.createStatement();
+        String getCurrentFlightAvail = String.format("SELECT Available FROM Flights WHERE FlightN = '%s';", flightNumber);
+        resultSet = stmt.executeQuery(getCurrentFlightAvail);
+        int currentAvail = 0;
+        while(resultSet.next()){
+            currentAvail = resultSet.getInt("Available");
+        }
+        currentAvail++;
+
+        stmt = connection.createStatement();
+        String add1Availability = "UPDATE Flights SET Available = "
+                + "" + currentAvail + " WHERE flightN = " + "'" + flightNumber + "';";
+        stmt.executeUpdate(add1Availability);
+
+        return true; 
     }
      
     public List<Flight> searchFlightByDestination(String destination){

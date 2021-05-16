@@ -68,7 +68,7 @@ public class Controller {
             System.out.println("The flight has been successfully canceled.");
         }
         else{
-            System.err.println("");
+            System.err.println("This ticket with this passport number does not exist");
         }
     }
     
@@ -98,7 +98,7 @@ public class Controller {
             System.out.println("A Reservation has been cancelled.");
         }
         else{
-            System.err.println("");
+            System.err.println("You do not have a ticket correponding to this passport number");
         }
     }
     
