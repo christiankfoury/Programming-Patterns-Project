@@ -97,7 +97,7 @@ public class InputOutput {
                     printClientChoice();
                     Scanner input = new Scanner(System.in);
                     if (input.hasNextInt()) {
-                        choice += input.nextInt();
+                        choice = input.nextInt();
                     }
                     switch (choice) {
                         case 1:
@@ -325,7 +325,7 @@ public class InputOutput {
         while (!new ArrayList<>(Arrays.asList("origin", "dest", "duration")).contains(field.toLowerCase())) {
             printChosenLanguage("wrongInputMessage");
             printChosenLanguage("fieldToChangeInput");
-            field += scanner.nextLine();
+            field = scanner.nextLine();
         }
 
         list.add(field);

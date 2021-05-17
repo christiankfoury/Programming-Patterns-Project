@@ -103,7 +103,7 @@ public class Test {
                     inputOutputClient.printChoice();
                     Scanner input = new Scanner(System.in);
                     if (input.hasNextInt()) {
-                        choice += input.nextInt();
+                        choice = input.nextInt();
                     }
                     switch (choice) {
                         case 1:
