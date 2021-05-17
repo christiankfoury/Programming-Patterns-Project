@@ -304,7 +304,7 @@ public class Client {
                 double price = rs.getDouble("Amount");
 
                 map.put(res.getString("flightN") + " " + number, String.format("{" + res.getString("name") + "  %s, " + res.getString("origin") + " %s, " + res.getString("dest") + " %s,"
-                        + " " + res.getString("duration") + " %d, " + res.getString("seats") + " %d, " + res.getString("available") + " %d, " + res.getString("amount") + " %f}",
+                        + " " + res.getString("duration") + " %d, " + res.getString("seats") + " %d, " + res.getString("available") + " %d, " + res.getString("amount") + " %s}",
                         name, origin, destination, duration, totalSeats, availSeats, currency.format(price)));
             }
             return map;

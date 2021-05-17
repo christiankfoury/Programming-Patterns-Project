@@ -1,6 +1,7 @@
 package progpatproject;
 
 import java.sql.*;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -25,11 +26,13 @@ public class ClientsView {
         if (res == null) {
             res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
         }
+        NumberFormat currency = NumberFormat.getCurrencyInstance(locale);
+
         
         for (Flight flight : flights) {
             System.out.println(String.format("%s %s, %s %s, "
                     + "%s %s, %s %s, %s %d, %s %d, "
-                    + "%s %d, %s %f", 
+                    + "%s %d, %s %s", 
                     res.getString("flightN"), flight.getFlightN(), 
                     res.getString("name"), flight.getName(),
                     res.getString("origin"), flight.getOrigin(), 
@@ -37,7 +40,7 @@ public class ClientsView {
                     res.getString("duration"), flight.getDuration(),
                     res.getString("seats"), flight.getSeats(), 
                     res.getString("available"), flight.getAvailableSeats(), 
-                    res.getString("amount"), flight.getAmount()));
+                    res.getString("amount"), currency.format(flight.getAmount())));
         }
     }
 }
