@@ -1,6 +1,7 @@
 package progpatproject;
 
 import java.sql.*;
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -322,6 +323,7 @@ public class Flight {
         if (res == null) {
             res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
         }
+        NumberFormat currency = NumberFormat.getCurrencyInstance(locale);
         TreeMap<String, String> map = new TreeMap<>();
         Connection connection = SingleConnection.getInstance();
         try {
@@ -333,7 +335,7 @@ public class Flight {
                 map.put(res.getString("flightN") + " " + resultSet.getString("FlightN"), " " + res.getString("name") + " " + resultSet.getString("Name")
                         + ", " + res.getString("origin") + " " + resultSet.getString("Origin") + ", " + res.getString("dest") + " " + resultSet.getString("Dest")
                         + ", " + res.getString("duration") + " " + resultSet.getString("Duration") + ", " + res.getString("seats") + " " + resultSet.getString("Seats")
-                        + ", " + res.getString("available") + " " + resultSet.getString("Available") + ", " + res.getString("amount") + " " + resultSet.getString("Amount"));
+                        + ", " + res.getString("available") + " " + resultSet.getString("Available") + ", " + res.getString("amount") + " " + currency.format(resultSet.getDouble("Amount")));
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -355,7 +357,9 @@ public class Flight {
         if (res == null) {
             res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
         }
-                
+        NumberFormat currency = NumberFormat.getCurrencyInstance(locale);
+    
+        
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         Connection connection = SingleConnection.getInstance();
         try {
@@ -367,7 +371,7 @@ public class Flight {
                 map.put(res.getString("ticketN") + " " + resultSet.getString("ticketn"),res.getString("flightN")  + " " + resultSet.getString("flightn")
                         + ", " + res.getString("passNum") + " " + resultSet.getString("PassNum") + ", " + res.getString("flName") + " " + resultSet.getString("FLName")
                         + ", " + res.getString("issueDate") + " " + resultSet.getString("IssueDate") + ", " + res.getString("contact") + " " + resultSet.getString("Contact")
-                        + ", " + res.getString("amount") + " " + resultSet.getString("Amount"));
+                        + ", " + res.getString("amount") + " " + currency.format(resultSet.getDouble("Amount")));
             }
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
