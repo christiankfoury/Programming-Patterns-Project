@@ -111,7 +111,7 @@ public class ControllerIT {
         System.out.println("cancelFlight");
         Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
         ResourceBundle res = instance.getRessourceBundle();
-        instance.cancelFlight(15,2234);
+        instance.cancelFlight(1,2234);
         int count = countData(String.format("SELECT COUNT(*) FROM ReservedFlights WHERE FlightN = 'F100' and PassNum = 2234;"));
         assertEquals(0, count);
         System.out.println("");
@@ -179,7 +179,7 @@ public class ControllerIT {
         System.out.println("cancelReservation");
         Controller instance = new Controller(new Flight("F100", "American Airlines", "Laval", "California", 10, 10, 10, 10), new Client("Christian Kfoury", 2234, "2223334444"));
         ResourceBundle res = instance.getRessourceBundle();
-        instance.cancelReservation(15);
+        instance.cancelReservation(1);
         int count = countData("SELECT COUNT(*) FROM ReservedFlights WHERE FlightN = 'AC145' and PassNum = 2234;");
         assertEquals(0, count);
     }

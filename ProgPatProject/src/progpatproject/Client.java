@@ -3,6 +3,7 @@ package progpatproject;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.sql.*;
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -93,10 +94,15 @@ public class Client {
                     }
 
                     java.util.Date date = new java.util.Date();
-
+                    Locale locale = InputOutputUser.locale;
+                    if (locale == null) {
+                        locale = new Locale("en", "CA");
+                    }
+                    NumberFormat currency = NumberFormat.getCurrencyInstance(locale);
+                    
                     String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%d','%s',%d,'%s',"
-                            + "'%s','%s',%f);", ticketN, flightNumber, getPassNumber(), getFullName(),
-                            "" + date, getContact(), flight.getAmount());
+                            + "'%s','%s',%s);", ticketN, flightNumber, getPassNumber(), getFullName(),
+                            "" + date, getContact(), currency.format(flight.getAmount()));
                     stmt.executeUpdate(addEntry);
                     return true;
                 }
@@ -280,6 +286,8 @@ public class Client {
             if (res == null) {
                 res = ResourceBundle.getBundle("progpatproject/OutputBundle", locale);
             }
+            NumberFormat currency = NumberFormat.getCurrencyInstance(locale);
+            
             Statement stmt = connection.createStatement();
             String getFlight = "SELECT * FROM Flights WHERE Available > 0 ORDER BY flightN;";
             TreeMap<String, String> map = new TreeMap();
@@ -297,7 +305,7 @@ public class Client {
 
                 map.put(res.getString("flightN") + " " + number, String.format("{" + res.getString("name") + "  %s, " + res.getString("origin") + " %s, " + res.getString("dest") + " %s,"
                         + " " + res.getString("duration") + " %d, " + res.getString("seats") + " %d, " + res.getString("available") + " %d, " + res.getString("amount") + " %f}",
-                        name, origin, destination, duration, totalSeats, availSeats, price));
+                        name, origin, destination, duration, totalSeats, availSeats, currency.format(price)));
             }
             return map;
         } catch (SQLException e) {
