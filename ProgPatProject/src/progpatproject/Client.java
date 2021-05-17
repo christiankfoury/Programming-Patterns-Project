@@ -100,9 +100,9 @@ public class Client {
                     }
                     NumberFormat currency = NumberFormat.getCurrencyInstance(locale);
                     
-                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES('%d','%s',%d,'%s',"
-                            + "'%s','%s',%s);", ticketN, flightNumber, getPassNumber(), getFullName(),
-                            "" + date, getContact(), currency.format(flight.getAmount()));
+                    String addEntry = String.format("INSERT INTO ReservedFlights VALUES(%d,'%s',%d,'%s',"
+                            + "'%s','%s', '%s');", ticketN, flightNumber, getPassNumber(), getFullName(),
+                            date, getContact(), currency.format(flight.getAmount()));
                     stmt.executeUpdate(addEntry);
                     return true;
                 }
